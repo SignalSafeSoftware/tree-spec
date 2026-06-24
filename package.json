@@ -1,0 +1,71 @@
+{
+    "name": "@signalsafe/tree-spec",
+    "version": "0.3.1",
+    "type": "module",
+    "description": "TypeScript types, graph helpers, compiler utilities, and linting for the TreeSpec decision-tree format.",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/SignalSafeSoftware/tree-spec.git"
+    },
+    "bugs": {
+        "url": "https://github.com/SignalSafeSoftware/tree-spec/issues"
+    },
+    "homepage": "https://github.com/SignalSafeSoftware/tree-spec#readme",
+    "keywords": [
+        "tree-spec",
+        "decision-tree",
+        "scenario",
+        "training",
+        "phishing",
+        "security-awareness",
+        "typescript",
+        "schema",
+        "wire-format",
+        "graph",
+        "lint",
+        "compiler",
+        "signalsafe"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "engines": {
+        "node": ">=18"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "build": "tsc -p tsconfig.build.json",
+        "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.examples.json",
+        "typecheck:examples": "tsc --noEmit -p tsconfig.examples.json",
+        "pack:local": "npm pack --pack-destination ../../dist/reusable-npm",
+        "release:check": "node ../../scripts/run-private-package-release-checks.mjs --mode prepublish",
+        "release:verify": "node ../../scripts/run-private-package-release-checks.mjs --mode postpublish",
+        "publish:preflight": "node ../../scripts/check-private-registry-preflight.mjs --scope @signalsafe",
+        "publish:dry-run": "npm publish --dry-run",
+        "publish:verify": "node ../../scripts/check-private-package-postpublish.mjs --scope @signalsafe --package @signalsafe/tree-spec --version $npm_package_version",
+        "pack:check": "node ../../scripts/check-package-tarball.mjs --tgz \"../../dist/reusable-npm/signalsafe-tree-spec-$npm_package_version.tgz\" --expect package/dist/index.js --expect package/package.json --expect package/README.md",
+        "smoke:external": "node ../../scripts/smoke-tree-spec-external-consumer.mjs",
+        "smoke:published": "node ../../scripts/smoke-tree-spec-external-consumer.mjs --source registry",
+        "prepublishOnly": "npm run build",
+        "prepare": "npm run build",
+        "test": "cd ../../frontend && yarn vitest run --config vitest.tree-spec.config.ts"
+    },
+    "devDependencies": {
+        "typescript": "^5.4.2"
+    }
+}

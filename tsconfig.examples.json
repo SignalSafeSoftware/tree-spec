@@ -1,0 +1,11 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@signalsafe/tree-spec": ["./src/index.ts"]
+        }
+    },
+    "include": ["examples/**/*.ts"],
+    "exclude": ["tests/**", "node_modules", "dist"]
+}
