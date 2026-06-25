@@ -2,6 +2,8 @@ name: CI
 
 on:
     workflow_dispatch:
+    push:
+        branches: [main]
     pull_request:
         branches: [main, develop]
         types: [opened, synchronize, reopened, labeled, unlabeled]
@@ -18,6 +20,7 @@ jobs:
         name: Checks
         if: |
             github.event_name == 'workflow_dispatch' ||
+            github.event_name == 'push' ||
             (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'checks'))
         runs-on: ubuntu-latest
         container: node:24-alpine
@@ -41,6 +44,7 @@ jobs:
         name: Tests
         if: |
             github.event_name == 'workflow_dispatch' ||
+            github.event_name == 'push' ||
             (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'tests'))
         runs-on: ubuntu-latest
         container: node:24-alpine
@@ -72,6 +76,7 @@ jobs:
         needs: [tests]
         if: |
             github.event_name == 'workflow_dispatch' ||
+            github.event_name == 'push' ||
             (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'scan'))
         runs-on: ubuntu-latest
         permissions:
@@ -106,6 +111,7 @@ jobs:
               uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
 
             - name: Sonar PR comment
+              if: github.event_name == 'pull_request'
               uses: actions/github-script@v7
               with:
                   script: |
