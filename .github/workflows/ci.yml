@@ -58,9 +58,7 @@ jobs:
               run: yarn install --frozen-lockfile
 
             - name: Unit tests with coverage
-              run: |
-                  yarn add --dev @vitest/coverage-v8@"^3.2.4"
-                  yarn test --coverage
+              run: yarn test --coverage
 
             - name: Upload coverage
               uses: actions/upload-artifact@v4
