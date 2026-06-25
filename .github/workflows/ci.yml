@@ -43,7 +43,10 @@ jobs:
         name: Tests
         if: |
             github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
-            (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'tests'))
+            (github.event_name == 'pull_request' && (
+              contains(github.event.pull_request.labels.*.name, 'tests') ||
+              contains(github.event.pull_request.labels.*.name, 'scan')
+            ))
         runs-on: ubuntu-latest
         container: node:24-alpine
         steps:
@@ -66,7 +69,8 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: coverage
-                  path: coverage/
+                  path: coverage/lcov.info
+                  if-no-files-found: error
 
     scan:
         name: Scan
@@ -89,7 +93,7 @@ jobs:
               uses: actions/download-artifact@v4
               with:
                   name: coverage
-                  path: coverage/
+                  path: coverage
 
             - name: SonarCloud scan
               uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
