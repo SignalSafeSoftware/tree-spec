@@ -21,7 +21,8 @@ jobs:
         if: |
             github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
             (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'checks'))
-        runs-on: alpine
+        runs-on: ubuntu-latest
+        container: node:24-alpine
         steps:
             - uses: actions/checkout@v4
 
@@ -43,7 +44,8 @@ jobs:
         if: |
             github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
             (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'tests'))
-        runs-on: alpine
+        runs-on: ubuntu-latest
+        container: node:24-alpine
         steps:
             - uses: actions/checkout@v4
 
@@ -72,7 +74,8 @@ jobs:
         if: |
             github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
             (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'scan'))
-        runs-on: alpine
+        runs-on: ubuntu-latest
+        container: node:24-alpine
         permissions:
             contents: read
             pull-requests: write
@@ -120,7 +123,8 @@ jobs:
               (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'publish'))
             ) &&
             (needs.checks.result == 'success' && needs.tests.result == 'success' && needs.scan.result == 'success')
-        runs-on: alpine
+        runs-on: ubuntu-latest
+        container: node:24-alpine
         steps:
             - uses: actions/checkout@v4
 
