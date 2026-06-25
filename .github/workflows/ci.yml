@@ -5,8 +5,6 @@ on:
     pull_request:
         branches: [main, develop, master]
         types: [opened, synchronize, reopened, labeled, unlabeled]
-    push:
-        branches: [main, develop, master]
 
 concurrency:
     group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +17,7 @@ jobs:
     checks:
         name: Checks
         if: |
-            github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
+            github.event_name == 'workflow_dispatch' ||
             (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'checks'))
         runs-on: ubuntu-latest
         container: node:24-alpine
@@ -42,7 +40,7 @@ jobs:
     tests:
         name: Tests
         if: |
-            github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
+            github.event_name == 'workflow_dispatch' ||
             (github.event_name == 'pull_request' && (
               contains(github.event.pull_request.labels.*.name, 'tests') ||
               contains(github.event.pull_request.labels.*.name, 'scan')
@@ -75,7 +73,7 @@ jobs:
     scan:
         name: Scan
         if: |
-            github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
+            github.event_name == 'workflow_dispatch' ||
             (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'scan'))
         runs-on: ubuntu-latest
         permissions:
@@ -110,7 +108,6 @@ jobs:
               uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
 
             - name: Sonar PR comment
-              if: github.event_name == 'pull_request' && always()
               uses: actions/github-script@v7
               with:
                   script: |
@@ -126,9 +123,8 @@ jobs:
         name: Publish
         needs: [checks, tests, scan]
         if: |
-            always() &&
             (
-              github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
+              github.event_name == 'workflow_dispatch' ||
               (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'publish'))
             ) &&
             (needs.checks.result == 'success' && needs.tests.result == 'success' && needs.scan.result == 'success')
