@@ -80,14 +80,14 @@ jobs:
             contents: read
             pull-requests: write
         env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
         steps:
             - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
 
             - name: Install Sonar prerequisites
-              run: apk add --no-cache openjdk17-jre bash git
+              run: apk add --no-cache openjdk17-jre bash git gnupg
 
             - name: Download coverage
               uses: actions/download-artifact@v4
@@ -98,7 +98,7 @@ jobs:
             - name: SonarCloud scan
               uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
               env:
-                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+                  SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
 
             - name: Sonar PR comment
               if: github.event_name == 'pull_request' && always()
