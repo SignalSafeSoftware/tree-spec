@@ -63,9 +63,10 @@
         "smoke:published": "node ../../scripts/smoke-tree-spec-external-consumer.mjs --source registry",
         "prepublishOnly": "npm run build",
         "prepare": "npm run build",
-        "test": "cd ../../frontend && yarn vitest run --config vitest.tree-spec.config.ts"
+        "test": "vitest run"
     },
     "devDependencies": {
-        "typescript": "^5.4.2"
+        "typescript": "^5.4.2",
+        "vitest": "^3.2.4"
     }
 }

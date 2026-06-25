@@ -1,0 +1,138 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main, develop, master]
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches: [main, develop, master]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      check: ${{ steps.plan.outputs.check }}
+      test: ${{ steps.plan.outputs.test }}
+      build: ${{ steps.plan.outputs.build }}
+      sonar: ${{ steps.plan.outputs.sonar }}
+      publish: ${{ steps.plan.outputs.publish }}
+    steps:
+      - id: plan
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          LABELS_JSON: ${{ toJson(github.event.pull_request.labels.*.name) }}
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+          const event = process.env.EVENT_NAME;
+          const labels = event === "pull_request"
+            ? JSON.parse(process.env.LABELS_JSON || "[]")
+            : [];
+          const all = ["check", "test", "build", "sonar", "publish"];
+          const map = {
+            all,
+            check: ["check"],
+            tests: ["test"],
+            scan: ["test", "sonar"],
+            build: ["build"],
+            publish: ["publish"],
+          };
+          let enabled = new Set(all);
+          if (event === "pull_request" && labels.length > 0) {
+            const picked = new Set();
+            for (const label of labels) {
+              for (const part of map[label] || []) picked.add(part);
+            }
+            if (picked.size > 0) enabled = picked;
+          }
+          for (const key of all) {
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `${key}=${enabled.has(key) ? "true" : "false"}\n`);
+          }
+          NODE
+
+  checks:
+    name: Checks
+    needs: resolve
+    if: |
+      needs.resolve.outputs.check == 'true' ||
+      needs.resolve.outputs.test == 'true' ||
+      needs.resolve.outputs.build == 'true' ||
+      needs.resolve.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        if: needs.resolve.outputs.check == 'true'
+        run: npm run typecheck
+
+      - name: Unit tests with coverage
+        if: needs.resolve.outputs.test == 'true'
+        run: |
+          npm install --no-save @vitest/coverage-v8
+          npx vitest run --coverage
+
+      - name: Build
+        if: needs.resolve.outputs.build == 'true'
+        run: npm run build
+
+      - name: Publish dry run
+        if: needs.resolve.outputs.publish == 'true'
+        run: npm publish --dry-run
+
+  sonar:
+    name: SonarQube
+    needs: resolve
+    if: needs.resolve.outputs.sonar == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Unit tests with coverage
+        run: |
+          npm install --no-save @vitest/coverage-v8
+          npx vitest run --coverage
+
+      - name: SonarCloud scan
+        uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Sonar PR comment
+        if: github.event_name == 'pull_request' && always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          body="SonarCloud analysis for \`@signalsafe/tree-spec\` (\`signalsafe-package-tree-spec\`) completed with result \`${{ job.status }}\`."
+          gh pr comment "${{ github.event.pull_request.number }}" --body "$body" || true

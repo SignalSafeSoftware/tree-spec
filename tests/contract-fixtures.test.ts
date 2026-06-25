@@ -11,8 +11,7 @@ import { lintTreeSpecWire } from "../src/lint";
 import type { TreeSpecWire } from "../src/types";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(__dirname, "../../..");
-const fixturesDir = path.join(repoRoot, "contracts", "tree-spec", "fixtures");
+const fixturesDir = path.join(__dirname, "fixtures");
 
 function loadFixture(name: string): TreeSpecWire {
     const p = path.join(fixturesDir, name);
