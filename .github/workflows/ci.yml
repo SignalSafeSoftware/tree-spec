@@ -74,7 +74,6 @@ jobs:
 
     scan:
         name: Scan
-        needs: tests
         if: |
             github.event_name == 'workflow_dispatch' || github.event_name == 'push' ||
             (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'scan'))
@@ -89,16 +88,31 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Download coverage
-              uses: actions/download-artifact@v4
+            - uses: actions/setup-node@v4
               with:
-                  name: coverage
-                  path: coverage
+                  node-version: ${{ env.NODE_VERSION }}
+
+            - name: Enable Yarn
+              run: corepack enable
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Unit tests with coverage
+              run: yarn test --coverage
+
+            - name: Verify coverage report
+              run: |
+                  test -f coverage/lcov.info
+                  grep '^SF:src/' coverage/lcov.info
 
             - name: SonarCloud scan
               uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
               env:
                   SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
+              with:
+                  args: >
+                      -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
 
             - name: Sonar PR comment
               if: github.event_name == 'pull_request' && always()
