@@ -28,7 +28,7 @@ npm install @signalsafe/tree-spec
 
 For TypeScript consumers, use a normal modern ESM setup such as `module: "NodeNext"` and `moduleResolution: "NodeNext"` (or the equivalent bundler-compatible settings in your toolchain). The package ships built ESM + declarations in `dist/`.
 
-All README examples are strictly typed and are checked by `npm run typecheck`, which also runs `tsc --noEmit -p tsconfig.examples.json` for the example files.
+All README examples are strictly typed and are checked by `yarn typecheck`, which also runs `tsc --noEmit -p tsconfig.examples.json` for the example files.
 
 ## Repository
 
@@ -418,11 +418,11 @@ Cross-language fixture JSON should stay in sync in your product CI when wire rul
 ## Development
 
 ```bash
-npm install
-npm run build
-npm test
-npm run typecheck          # includes tsconfig.examples.json
-npm run typecheck:examples
+yarn install
+yarn build
+yarn test
+yarn typecheck          # includes tsconfig.examples.json
+yarn typecheck:examples
 ```
 
 ## Security
