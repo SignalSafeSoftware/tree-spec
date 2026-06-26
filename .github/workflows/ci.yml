@@ -4,9 +4,10 @@ on:
     workflow_dispatch:
     push:
         branches: [main]
+        tags: ["v*"]
     pull_request:
         branches: [main, develop]
-        types: [opened, synchronize, reopened, labeled, unlabeled]
+        types: [opened, synchronize, reopened]
 
 concurrency:
     group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -18,10 +19,6 @@ env:
 jobs:
     checks:
         name: Checks
-        if: |
-            github.event_name == 'workflow_dispatch' ||
-            github.event_name == 'push' ||
-            (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'checks'))
         runs-on: ubuntu-latest
         container: node:24-alpine
         steps:
@@ -42,10 +39,6 @@ jobs:
 
     tests:
         name: Tests
-        if: |
-            github.event_name == 'workflow_dispatch' ||
-            github.event_name == 'push' ||
-            (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'tests'))
         runs-on: ubuntu-latest
         container: node:24-alpine
         steps:
@@ -123,15 +116,9 @@ jobs:
                           body,
                       });
 
-    publish:
-        name: Publish
-        needs: [checks, tests, scan]
-        if: |
-            (
-              github.event_name == 'workflow_dispatch' ||
-              (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'publish'))
-            ) &&
-            (needs.checks.result == 'success' && needs.tests.result == 'success' && needs.scan.result == 'success')
+    smoke-package:
+        name: Smoke package
+        needs: [checks, tests]
         runs-on: ubuntu-latest
         container: node:24-alpine
         steps:
@@ -147,8 +134,37 @@ jobs:
             - name: Install dependencies
               run: yarn install --frozen-lockfile
 
-            - name: Build
-              run: yarn build
+            - name: Smoke-test packed artifact
+              run: yarn smoke:package
+
+    publish:
+        name: Publish
+        needs: [checks, tests, scan, smoke-package]
+        if: |
+            (
+              (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+              (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))
+            ) &&
+            needs.checks.result == 'success' &&
+            needs.tests.result == 'success' &&
+            needs.scan.result == 'success'
+        runs-on: ubuntu-latest
+        container: node:24-alpine
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+
+            - name: Enable Yarn
+              run: corepack enable
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Verify artifact before publish
+              run: yarn smoke:package
 
             - name: Publish to npm
-              run: yarn publish --access public --non-interactive
+              run: yarn publish --access public --non-interactive --ignore-scripts

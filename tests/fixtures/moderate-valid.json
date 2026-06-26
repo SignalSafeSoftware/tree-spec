@@ -4,15 +4,34 @@
   "nodes": {
     "s": {
       "type": "prompt",
-      "prompt": "Choose",
-      "choices": [{ "id": "click", "label": "Go" }]
+      "prompt": "Initial question",
+      "choices": [{ "id": "continue", "label": "Continue" }]
+    },
+    "middle": {
+      "type": "prompt",
+      "prompt": "Follow-up",
+      "choices": [{ "id": "finish", "label": "Finish" }]
     }
   },
   "transitions": [
     {
-      "from": ["s", "click"],
+      "from": ["s", "continue"],
+      "to": "middle",
+      "feedback": {
+        "key": "continue-fb",
+        "title": "Good start",
+        "takeaway": "Keep going"
+      }
+    },
+    {
+      "from": ["middle", "finish"],
       "to": "END",
-      "outcome": "safe"
+      "outcome": "safe",
+      "feedback": {
+        "key": "finish-fb",
+        "title": "Done",
+        "takeaway": "You finished"
+      }
     }
   ]
 }
