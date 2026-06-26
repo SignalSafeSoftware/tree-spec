@@ -6,7 +6,8 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { TREESPEC_WIRE_VERSION } from "../src/constants";
+import { END_NODE_ID, TREESPEC_WIRE_VERSION } from "../src/constants";
+import { compileTreeSpec, decompileTreeSpec } from "../src/compile";
 import { lintTreeSpecWire } from "../src/lint";
 import type { TreeSpecWire } from "../src/types";
 
@@ -25,9 +26,25 @@ describe("TreeSpec contract fixtures (shared with Python)", () => {
         expect(lintTreeSpecWire(raw)).toHaveLength(0);
     });
 
+    it("round-trips minimal-valid.json through compile/decompile", () => {
+        const raw = loadFixture("minimal-valid.json");
+        const graph = decompileTreeSpec(raw);
+        const back = compileTreeSpec(graph);
+        expect(back.start_node).toBe(raw.start_node);
+        expect(Object.keys(back.nodes)).toEqual(Object.keys(raw.nodes));
+    });
+
     it("accepts moderate-valid.json", () => {
         const raw = loadFixture("moderate-valid.json");
         expect(lintTreeSpecWire(raw)).toHaveLength(0);
+    });
+
+    it("round-trips moderate-valid.json preserving END outcome", () => {
+        const raw = loadFixture("moderate-valid.json");
+        const graph = decompileTreeSpec(raw);
+        const back = compileTreeSpec(graph);
+        const endTransition = back.transitions.find((t) => t.to === END_NODE_ID);
+        expect(endTransition?.outcome).toBe("safe");
     });
 
     it("rejects invalid-end-without-outcome.json (END requires outcome)", () => {
