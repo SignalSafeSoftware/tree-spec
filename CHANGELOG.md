@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-06-26
+
+### Changed
+
+- Standardize development on Yarn 1.22.22 (`packageManager`, README dev commands).
+
+### CI
+
+- Publish job uses `yarn publish` with `NODE_AUTH_TOKEN` for npm registry auth.
+
 ## [0.3.1] - 2026-06-26
 
 ### Added
@@ -31,5 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Release process documented in [RELEASING.md](./RELEASING.md).
 
-[Unreleased]: https://github.com/SignalSafeSoftware/tree-spec/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/SignalSafeSoftware/tree-spec/compare/v0.3.2...HEAD
+[0.3.2]: https://github.com/SignalSafeSoftware/tree-spec/releases/tag/v0.3.2
 [0.3.1]: https://github.com/SignalSafeSoftware/tree-spec/releases/tag/v0.3.1
