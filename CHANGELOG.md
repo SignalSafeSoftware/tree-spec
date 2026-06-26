@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `SECURITY.md` and Dependabot configuration.
 - `CHANGELOG.md` and standalone release documentation.
+- TreeSpec parity fixtures test suite.
+- Expanded unit test coverage.
+- Package artifact smoke test (`yarn smoke:package`).
 
 ### Changed
 
