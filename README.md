@@ -428,3 +428,8 @@ npm run typecheck:examples
 ## Security
 
 See [SECURITY.md](./SECURITY.md). Parsing and lint enforce the documented wire contract; they do not authenticate users or authorize access to scenarios.
+
+## Changelog and releases
+
+- [CHANGELOG.md](./CHANGELOG.md)
+- [RELEASING.md](./RELEASING.md)
