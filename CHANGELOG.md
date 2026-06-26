@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-06-26
+
 ### Added
 
 - `SECURITY.md` and Dependabot configuration.
@@ -25,10 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 
 - Release process documented in [RELEASING.md](./RELEASING.md).
-
-## [0.3.1]
-
-Prior published release on npm (`@signalsafe/tree-spec`). Detailed historical notes were not recorded in this repository.
 
 [Unreleased]: https://github.com/SignalSafeSoftware/tree-spec/compare/v0.3.1...HEAD
 [0.3.1]: https://github.com/SignalSafeSoftware/tree-spec/releases/tag/v0.3.1
