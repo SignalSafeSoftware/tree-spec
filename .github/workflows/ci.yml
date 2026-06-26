@@ -116,9 +116,30 @@ jobs:
                           body,
                       });
 
+    smoke-package:
+        name: Smoke package
+        needs: [checks, tests]
+        runs-on: ubuntu-latest
+        container: node:24-alpine
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+
+            - name: Enable Yarn
+              run: corepack enable
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Smoke-test packed artifact
+              run: yarn smoke:package
+
     publish:
         name: Publish
-        needs: [checks, tests, scan]
+        needs: [checks, tests, scan, smoke-package]
         if: |
             (
               (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
@@ -142,8 +163,8 @@ jobs:
             - name: Install dependencies
               run: yarn install --frozen-lockfile
 
-            - name: Build
-              run: yarn build
+            - name: Verify artifact before publish
+              run: yarn smoke:package
 
             - name: Publish to npm
-              run: yarn publish --access public --non-interactive
+              run: yarn publish --access public --non-interactive --ignore-scripts
