@@ -167,4 +167,6 @@ jobs:
               run: yarn smoke:package
 
             - name: Publish to npm
-              run: yarn publish --access public --non-interactive --ignore-scripts
+              run: yarn publish --access public --ignore-scripts
+              env:
+                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
