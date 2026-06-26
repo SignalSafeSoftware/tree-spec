@@ -3,7 +3,8 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "@signalsafe/tree-spec": ["./src/index.ts"]
+            "@signalsafe/tree-spec": ["./src/index.ts"],
+            "@signalsafe/tree-spec/*": ["./src/*"]
         }
     },
     "include": ["examples/**/*.ts"],

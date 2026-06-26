@@ -2,6 +2,24 @@
 
 Generic **TreeSpec** wire format (`TreeSpecWire`), authoring graph model (`TreeGraph`), and **compile / decompile / lint** helpers.
 
+| | |
+|---|---|
+| **npm** | `@signalsafe/tree-spec` |
+| **GitHub** | [SignalSafeSoftware/tree-spec](https://github.com/SignalSafeSoftware/tree-spec) |
+
+## What this package does
+
+- Define the **TreeSpec wire JSON contract** (types, constants, guards).
+- **Compile / decompile** between wire JSON and an authoring graph (`TreeGraph`).
+- **Lint** wire payloads (`lintTreeSpecWire`) and normalize legacy shapes (`options`, legacy END ids).
+- Read/write **graph-editor metadata** namespaces (`readGraphEditorMeta`, `writeGraphEditorMeta`).
+
+## What this package does not do
+
+- Scenario simulation, scoring sessions, or learner UI — use `@signalsafe/simulator-core` / `@signalsafe/simulator-react`.
+- Graph editor UI — use `@signalsafe/tree-spec-editor-*`.
+- HTTP, auth, persistence, or sandboxing — contract validation only; hosts decide trust and access control.
+
 ## Install
 
 ```bash
@@ -388,11 +406,25 @@ The editor linter (`lintEditorTree` in `-core`) emits **warnings** for invalid h
 
 ## Monorepo architecture
 
-| Layer | Location | Role |
-|-------|----------|------|
-| **TypeScript core (this package)** | `packages/tree-spec/` | Wire format, compile/decompile, lint — published as `@signalsafe/tree-spec` |
-| **Python core** | `libs/deliveryplus_tree_spec/` | Parity implementation — published as `signalsafe-tree-spec` on PyPI |
-| **Python app wrapper** | `libs/vega/common/tree_spec/` | Training heuristics and app-facing helpers; backend imports this layer only |
-| **Shared fixtures** | `contracts/tree-spec/` | Cross-language contract tests and schema |
+| Layer | Package / repo | Role |
+|-------|----------------|------|
+| **TypeScript core (this package)** | `@signalsafe/tree-spec` | Wire format, compile/decompile, lint |
+| **Python core** | [`signalsafe-tree-spec`](https://github.com/SignalSafeSoftware/tree-spec-python) (`deliveryplus_tree_spec`) | Backend parity: models, lint, builder, patch |
+| **Simulator runtime** | `@signalsafe/simulator-core` | Headless session stepping |
+| **Editor stack** | `@signalsafe/tree-spec-editor-core` → `-react` → `-editor` | Authoring UI layers |
 
-**Policy:** `packages/` stays in the monorepo as the source of truth. npm publish is for external consumers; in-repo apps resolve via Yarn workspaces. Backend Python must not import `deliveryplus_tree_spec` directly — use `vega.common.tree_spec`.
+Cross-language fixture JSON should stay in sync in your product CI when wire rules change.
+
+## Development
+
+```bash
+npm install
+npm run build
+npm test
+npm run typecheck          # includes tsconfig.examples.json
+npm run typecheck:examples
+```
+
+## Security
+
+See [SECURITY.md](./SECURITY.md). Parsing and lint enforce the documented wire contract; they do not authenticate users or authorize access to scenarios.
