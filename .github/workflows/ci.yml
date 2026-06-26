@@ -156,7 +156,6 @@ jobs:
             - uses: actions/setup-node@v6
               with:
                   node-version: ${{ env.NODE_VERSION }}
-                  registry-url: https://registry.npmjs.org
 
             - name: Enable Yarn
               run: corepack enable
@@ -167,7 +166,17 @@ jobs:
             - name: Verify artifact before publish
               run: yarn smoke:package
 
+            - name: Check package version
+              run: node -e "const p=require('./package.json'); console.log(p.name, p.version)"
+
+            - name: Configure npm auth
+              run: |
+                echo "registry=https://registry.npmjs.org/" > ~/.npmrc
+                echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+              env:
+                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
             - name: Publish to npm
-              run: yarn publish --access public --ignore-scripts
+              run: npm publish --access public --ignore-scripts
               env:
                 NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
