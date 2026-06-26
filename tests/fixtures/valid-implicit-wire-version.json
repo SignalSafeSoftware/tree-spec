@@ -1,5 +1,4 @@
 {
-  "wire_version": 1,
   "start_node": "s",
   "nodes": {
     "s": {

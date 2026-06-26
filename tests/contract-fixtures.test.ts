@@ -1,6 +1,6 @@
 /**
- * Cross-language contract: same JSON fixtures as `contracts/tree-spec/fixtures`
- * and `backend/shared/tests/test_tree_spec_contract_fixtures.py`.
+ * Legacy contract fixture smoke tests. Full parity coverage lives in
+ * `parity-fixtures.test.ts`; mirrored JSON is in `tests/fixtures/` (see README).
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";

@@ -1,0 +1,12 @@
+{
+  "wire_version": true,
+  "start_node": "s",
+  "nodes": {
+    "s": {
+      "type": "prompt",
+      "prompt": "Hi",
+      "choices": []
+    }
+  },
+  "transitions": []
+}

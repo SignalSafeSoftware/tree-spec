@@ -5,12 +5,15 @@
     "s": {
       "type": "prompt",
       "prompt": "Choose",
-      "choices": [{ "id": "done", "label": "Done" }]
+      "choices": [
+        { "id": "ok", "label": "OK" },
+        { "id": "missing", "label": "Missing" }
+      ]
     }
   },
   "transitions": [
     {
-      "from": ["s", "done"],
+      "from": ["s", "ok"],
       "to": "END",
       "outcome": "safe"
     }

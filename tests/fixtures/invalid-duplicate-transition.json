@@ -5,14 +5,19 @@
     "s": {
       "type": "prompt",
       "prompt": "Choose",
-      "choices": [{ "id": "done", "label": "Done" }]
+      "choices": [{ "id": "go", "label": "Go" }]
     }
   },
   "transitions": [
     {
-      "from": ["s", "done"],
+      "from": ["s", "go"],
       "to": "END",
       "outcome": "safe"
+    },
+    {
+      "from": ["s", "go"],
+      "to": "END",
+      "outcome": "at_risk"
     }
   ]
 }
