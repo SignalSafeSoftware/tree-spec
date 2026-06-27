@@ -31,6 +31,130 @@ describe("compile / decompile", () => {
         expect(back.transitions[0]?.outcome).toBe("at_risk");
     });
 
+    it("round-trips transition feedback on wire transitions", () => {
+        const wire: TreeSpecWire = {
+            start_node: "n1",
+            nodes: {
+                n1: {
+                    type: "prompt",
+                    prompt: "Pick",
+                    choices: [{ id: "go", label: "Go" }],
+                },
+                n2: {
+                    type: "prompt",
+                    prompt: "Next",
+                    choices: [{ id: "end", label: "End" }],
+                },
+            },
+            transitions: [
+                {
+                    from: ["n1", "go"],
+                    to: "n2",
+                    feedback: {
+                        key: "mid-fb",
+                        title: "Mid path",
+                        takeaway: "Keep going",
+                    },
+                },
+                {
+                    from: ["n2", "end"],
+                    to: END_NODE_ID,
+                    outcome: "safe",
+                    feedback: {
+                        key: "end-fb",
+                        title: "Finished",
+                    },
+                },
+            ],
+        };
+
+        const graph = decompileTreeSpec(wire);
+        expect(graph.transitions[0]?.feedback).toMatchObject({
+            key: "mid-fb",
+            title: "Mid path",
+        });
+        expect(graph.transitions[1]?.feedback).toMatchObject({
+            key: "end-fb",
+            title: "Finished",
+        });
+
+        const back = compileTreeSpec(graph);
+        expect(back.transitions[0]?.feedback).toMatchObject({
+            key: "mid-fb",
+            title: "Mid path",
+            takeaway: "Keep going",
+        });
+        expect(back.transitions[1]?.feedback).toMatchObject({
+            key: "end-fb",
+            title: "Finished",
+        });
+    });
+
+    it("round-trips choice feedback on wire choices", () => {
+        const wire: TreeSpecWire = {
+            start_node: "n1",
+            nodes: {
+                n1: {
+                    type: "prompt",
+                    prompt: "Hello",
+                    choices: [
+                        {
+                            id: "c1",
+                            label: "Go",
+                            feedback: {
+                                key: "choice-fb",
+                                title: "Choice feedback",
+                            },
+                        },
+                    ],
+                },
+            },
+            transitions: [
+                { from: ["n1", "c1"], to: END_NODE_ID, outcome: "at_risk" },
+            ],
+        };
+
+        const graph = decompileTreeSpec(wire);
+        expect(graph.nodes.n1?.choices[0]?.feedback).toMatchObject({
+            key: "choice-fb",
+            title: "Choice feedback",
+        });
+
+        const back = compileTreeSpec(graph);
+        expect(back.nodes.n1?.choices?.[0]?.feedback).toMatchObject({
+            key: "choice-fb",
+            title: "Choice feedback",
+        });
+    });
+
+    it("round-trips transition delta and lessons_triggered", () => {
+        const wire: TreeSpecWire = {
+            start_node: "n1",
+            nodes: {
+                n1: {
+                    type: "prompt",
+                    prompt: "Hello",
+                    choices: [{ id: "c1", label: "Go" }],
+                },
+            },
+            transitions: [
+                {
+                    from: ["n1", "c1"],
+                    to: END_NODE_ID,
+                    outcome: "safe",
+                    delta: { score: 10 },
+                    lessons_triggered: ["lesson-a"],
+                },
+            ],
+        };
+
+        const back = compileTreeSpec(decompileTreeSpec(wire));
+        expect(back.transitions[0]).toMatchObject({
+            delta: { score: 10 },
+            lessons_triggered: ["lesson-a"],
+        });
+    });
+
     it("preserves _meta extension slot", () => {
         const graph: TreeGraph = {
             start_node: "n1",

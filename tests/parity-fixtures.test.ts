@@ -44,6 +44,32 @@ describe("TreeSpec parity fixtures (mirrored with tree-spec-python)", () => {
         });
     });
 
+    it("moderate-valid preserves transition feedback on round-trip", () => {
+        const raw = loadFixture("moderate-valid.json");
+        const back = compileTreeSpec(decompileTreeSpec(raw));
+        expect(back.transitions).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    from: ["s", "continue"],
+                    to: "middle",
+                    feedback: expect.objectContaining({
+                        key: "continue-fb",
+                        title: "Good start",
+                    }),
+                }),
+                expect.objectContaining({
+                    from: ["middle", "finish"],
+                    to: END_NODE_ID,
+                    outcome: "safe",
+                    feedback: expect.objectContaining({
+                        key: "finish-fb",
+                        title: "Done",
+                    }),
+                }),
+            ]),
+        );
+    });
+
     it("moderate-valid preserves multi-step END outcome on round-trip", () => {
         const raw = loadFixture("moderate-valid.json");
         const back = compileTreeSpec(decompileTreeSpec(raw));

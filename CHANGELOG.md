@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-06-24
+
+### Fixed
+
+- `compileTreeSpec` / `decompileTreeSpec` now preserve transition `feedback`, `delta`, and `lessons_triggered`, and choice `feedback`, on round-trip (previously dropped transition feedback).
+
 ## [0.3.2] - 2026-06-26
 
 ### Changed

@@ -398,6 +398,32 @@ Helpers: `readGraphEditorMeta` / `writeGraphEditorMeta` in this package; `resolv
 
 The editor linter (`lintEditorTree` in `-core`) emits **warnings** for invalid hex colors, non-positive width/height/font size, bad `textWrap` / `textAlign`, and malformed `_meta.graph_editor` values.
 
+## Micro-feedback (transition and choice)
+
+Wire JSON may attach optional micro-feedback objects to **transitions** and/or **choices** (typically `{ key?, title?, body?, takeaway?, red_flags? }`). `compileTreeSpec` / `decompileTreeSpec` preserve both on round-trip.
+
+| Location | Wire path | Authoring graph |
+|----------|-----------|-----------------|
+| Transition feedback | `transitions[].feedback` | `TreeGraphTransition.feedback` |
+| Choice feedback | `nodes[id].choices[].feedback` | `TreeGraphChoice.feedback` |
+
+At **runtime**, `@signalsafe/simulator-core` resolves feedback with **transition first, then choice** (`resolveFeedbackForTransition`). Compile/decompile does not merge or prioritize — it stores both independently.
+
+Example transition with feedback:
+
+```json
+{
+  "from": ["start", "verify"],
+  "to": "END",
+  "outcome": "safe",
+  "feedback": {
+    "key": "verify-safe",
+    "title": "Well done",
+    "takeaway": "You verified before acting."
+  }
+}
+```
+
 ## Contract notes
 
 - `wire_version` is optional. When omitted, consumers can treat the payload as implicit v1.

@@ -9,7 +9,7 @@ fixtures.
 | File | Purpose |
 |------|---------|
 | `minimal-valid.json` | Start node, one choice, transition to END with outcome |
-| `moderate-valid.json` | Multi-step path with transition feedback (TS compile round-trip drops feedback today) |
+| `moderate-valid.json` | Multi-step path with transition feedback (round-trips through compile/decompile) |
 | `valid-implicit-wire-version.json` | Omits `wire_version` (implicit v1) |
 
 ## Invalid — wire version
