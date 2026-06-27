@@ -14,6 +14,8 @@ Generic **TreeSpec** wire format (`TreeSpecWire`), authoring graph model (`TreeG
 - **Lint** wire payloads (`lintTreeSpecWire`) and normalize legacy shapes (`options`, legacy END ids).
 - Read/write **graph-editor metadata** namespaces (`readGraphEditorMeta`, `writeGraphEditorMeta`).
 
+See [docs/compatibility.md](./docs/compatibility.md) for how **unknown JSON fields** are handled vs Python (`extra="ignore"`, compile/decompile lossiness, and `_meta` extension policy).
+
 ## What this package does not do
 
 - Scenario simulation, scoring sessions, or learner UI — use `@signalsafe/simulator-core` / `@signalsafe/simulator-react`.

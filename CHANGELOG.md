@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- [docs/compatibility.md](./docs/compatibility.md) — unknown-field behavior vs Python; extension policy under `_meta`.
+- Tests: `tests/unknown-fields.test.ts`.
+
 ## [0.3.3] - 2026-06-24
 
 ### Fixed

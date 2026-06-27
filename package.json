@@ -37,11 +37,12 @@
             "default": "./dist/index.js"
         }
     },
-    "files": [
-        "dist",
-        "README.md",
-        "LICENSE"
-    ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "docs"
+  ],
     "engines": {
         "node": ">=18"
     },
