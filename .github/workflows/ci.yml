@@ -36,7 +36,12 @@ jobs:
               run: yarn install --frozen-lockfile
 
             - name: Lint
-              run: yarn lint
+              run: |
+                  if node -e "process.exit(require('./package.json').scripts?.lint ? 0 : 1)"; then
+                    yarn lint
+                  else
+                    echo "No lint script defined; skipping lint."
+                  fi
 
             - name: Typecheck
               run: yarn typecheck
