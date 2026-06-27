@@ -22,7 +22,7 @@ jobs:
         runs-on: ubuntu-latest
         container: node:24-alpine
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - uses: actions/setup-node@v6
               with:
@@ -42,7 +42,7 @@ jobs:
         runs-on: ubuntu-latest
         container: node:24-alpine
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - uses: actions/setup-node@v6
               with:
@@ -78,7 +78,7 @@ jobs:
         env:
             SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
               with:
                   fetch-depth: 0
 
@@ -122,7 +122,7 @@ jobs:
         runs-on: ubuntu-latest
         container: node:24-alpine
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - uses: actions/setup-node@v6
               with:
@@ -151,7 +151,7 @@ jobs:
         runs-on: ubuntu-latest
         container: node:24-alpine
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - uses: actions/setup-node@v6
               with:
