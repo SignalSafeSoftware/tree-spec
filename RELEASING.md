@@ -2,6 +2,10 @@
 
 Standalone repository: [SignalSafeSoftware/tree-spec](https://github.com/SignalSafeSoftware/tree-spec).
 
+## Requirements
+
+- Node.js **>=20.19.0** for local development, CI, and publish smoke (see `package.json` `engines`).
+
 ## CI publish policy
 
 - **Checks and tests** run on every pull request.

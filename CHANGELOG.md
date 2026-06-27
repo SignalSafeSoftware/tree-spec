@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.3] - 2026-06-24
 
+### Changed
+
+- Raise minimum supported Node.js to **>=20.19.0** (`engines.node`); CI matrix tests **20.19**, **22**, and **24** (Node 18 dropped).
+
 ### Fixed
 
 - `compileTreeSpec` / `decompileTreeSpec` now preserve transition `feedback`, `delta`, and `lessons_triggered`, and choice `feedback`, on round-trip (previously dropped transition feedback).

@@ -445,7 +445,7 @@ Cross-language fixture JSON should stay in sync in your product CI when wire rul
 
 ## Development
 
-Requires Node.js **>=18** (`engines.node`). CI runs checks, tests, and smoke across Node **18**, **20**, **22**, and **24**; publish uses Node **24**.
+Requires Node.js **>=20.19.0** (`engines.node`). CI runs checks, tests, and smoke across Node **20.19**, **22**, and **24**; publish uses Node **24**.
 
 ```bash
 yarn install
