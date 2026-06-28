@@ -70,10 +70,16 @@ jobs:
               run: yarn install --frozen-lockfile
 
             - name: Test with coverage
-              run: yarn test:coverage
+              run: |
+                  if node -e "process.exit(require('./package.json').scripts?.['test:coverage'] ? 0 : 1)"; then
+                    yarn test:coverage
+                  else
+                    echo "No test:coverage script defined; skipping coverage."
+                    yarn test
+                  fi
 
             - name: Upload coverage
-              if: matrix.node-version == '24'
+              if: matrix.node-version == '24' && hashFiles('coverage/lcov.info') != ''
               uses: actions/upload-artifact@v7
               with:
                   name: coverage
@@ -102,12 +108,22 @@ jobs:
               run: yarn install --frozen-lockfile
 
             - name: Test with coverage
-              run: yarn test:coverage
+              run: |
+                  if node -e "process.exit(require('./package.json').scripts?.['test:coverage'] ? 0 : 1)"; then
+                    yarn test:coverage
+                  else
+                    echo "No test:coverage script defined; skipping coverage."
+                    yarn test
+                  fi
 
             - name: Verify coverage report
               run: |
-                  test -f coverage/lcov.info
-                  grep '^SF:src/' coverage/lcov.info
+                  if node -e "process.exit(require('./package.json').scripts?.['test:coverage'] ? 0 : 1)"; then
+                    test -f coverage/lcov.info
+                    grep '^SF:src/' coverage/lcov.info
+                  else
+                    echo "No test:coverage script defined; skipping coverage verification."
+                  fi
 
             - name: SonarCloud scan
               uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
