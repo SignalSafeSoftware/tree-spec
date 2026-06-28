@@ -14,6 +14,8 @@ Generic **TreeSpec** wire format (`TreeSpecWire`), authoring graph model (`TreeG
 - **Lint** wire payloads (`lintTreeSpecWire`) and normalize legacy shapes (`options`, legacy END ids).
 - Read/write **graph-editor metadata** namespaces (`readGraphEditorMeta`, `writeGraphEditorMeta`).
 
+See [docs/compatibility.md](./docs/compatibility.md) for how **unknown JSON fields** are handled vs Python (`extra="ignore"`, compile/decompile lossiness, and `_meta` extension policy).
+
 ## What this package does not do
 
 - Scenario simulation, scoring sessions, or learner UI — use `@signalsafe/simulator-core` / `@signalsafe/simulator-react`.
@@ -398,6 +400,32 @@ Helpers: `readGraphEditorMeta` / `writeGraphEditorMeta` in this package; `resolv
 
 The editor linter (`lintEditorTree` in `-core`) emits **warnings** for invalid hex colors, non-positive width/height/font size, bad `textWrap` / `textAlign`, and malformed `_meta.graph_editor` values.
 
+## Micro-feedback (transition and choice)
+
+Wire JSON may attach optional micro-feedback objects to **transitions** and/or **choices** (typically `{ key?, title?, body?, takeaway?, red_flags? }`). `compileTreeSpec` / `decompileTreeSpec` preserve both on round-trip.
+
+| Location | Wire path | Authoring graph |
+|----------|-----------|-----------------|
+| Transition feedback | `transitions[].feedback` | `TreeGraphTransition.feedback` |
+| Choice feedback | `nodes[id].choices[].feedback` | `TreeGraphChoice.feedback` |
+
+At **runtime**, `@signalsafe/simulator-core` resolves feedback with **transition first, then choice** (`resolveFeedbackForTransition`). Compile/decompile does not merge or prioritize — it stores both independently.
+
+Example transition with feedback:
+
+```json
+{
+  "from": ["start", "verify"],
+  "to": "END",
+  "outcome": "safe",
+  "feedback": {
+    "key": "verify-safe",
+    "title": "Well done",
+    "takeaway": "You verified before acting."
+  }
+}
+```
+
 ## Contract notes
 
 - `wire_version` is optional. When omitted, consumers can treat the payload as implicit v1.
@@ -416,6 +444,8 @@ The editor linter (`lintEditorTree` in `-core`) emits **warnings** for invalid h
 Cross-language fixture JSON should stay in sync in your product CI when wire rules change.
 
 ## Development
+
+Requires Node.js **>=22.12.0** (`engines.node`). CI runs checks, tests, and smoke on Node **22** and **24**; publish uses Node **24**. Node 20 is no longer supported (GitHub Actions Node 20 deprecation).
 
 ```bash
 yarn install

@@ -1,6 +1,6 @@
 {
     "name": "@signalsafe/tree-spec",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "type": "module",
     "description": "TypeScript types, graph helpers, compiler utilities, and linting for the TreeSpec decision-tree format.",
     "license": "MIT",
@@ -37,13 +37,14 @@
             "default": "./dist/index.js"
         }
     },
-    "files": [
-        "dist",
-        "README.md",
-        "LICENSE"
-    ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "docs"
+  ],
     "engines": {
-        "node": ">=18"
+        "node": ">=22.12.0"
     },
     "packageManager": "yarn@1.22.22",
     "publishConfig": {
@@ -51,6 +52,7 @@
     },
     "scripts": {
         "build": "tsc -p tsconfig.build.json",
+        "lint": "yarn typecheck",
         "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.examples.json",
         "typecheck:examples": "tsc --noEmit -p tsconfig.examples.json",
         "pack:local": "npm pack --pack-destination ../../dist/reusable-npm",
@@ -65,7 +67,8 @@
         "smoke:published": "node ../../scripts/smoke-tree-spec-external-consumer.mjs --source registry",
         "prepublishOnly": "npm run build",
         "prepare": "npm run build",
-        "test": "vitest run"
+        "test": "vitest run",
+        "test:coverage": "yarn test --coverage"
     },
     "devDependencies": {
         "typescript": "^5.4.2",

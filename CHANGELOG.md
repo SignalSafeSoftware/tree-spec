@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Raise minimum supported Node.js to **>=22.12.0** (`engines.node`); CI matrix tests **22** and **24** only (Node 20 dropped due to GitHub Actions Node 20 deprecation).
+
+### Added
+
+- [docs/compatibility.md](./docs/compatibility.md) — unknown-field behavior vs Python; extension policy under `_meta`.
+- Tests: `tests/unknown-fields.test.ts`.
+
+## [0.3.3] - 2026-06-24
+
+### Changed
+
+- Raise minimum supported Node.js to **>=20.19.0** (`engines.node`); CI matrix tests **20.19**, **22**, and **24** (Node 18 dropped).
+
+### Fixed
+
+- `compileTreeSpec` / `decompileTreeSpec` now preserve transition `feedback`, `delta`, and `lessons_triggered`, and choice `feedback`, on round-trip (previously dropped transition feedback).
+
 ## [0.3.2] - 2026-06-26
 
 ### Changed
