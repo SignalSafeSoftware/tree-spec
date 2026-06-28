@@ -4,27 +4,25 @@ import { readGraphPosition, writeGraphPosition } from "./renderHintsEditor.js";
 import { safeUUID } from "./randomId.js";
 import type { TreeGraph, TreeSpecTransitionWire, TreeSpecWire } from "./types.js";
 
-function readChoiceFeedback(choice: { feedback?: unknown }): unknown | undefined {
+type TransitionOptionalFields = {
+    feedback?: unknown;
+    delta?: unknown;
+    lessons_triggered?: unknown;
+};
+
+function readChoiceFeedback(choice: { feedback?: unknown }): unknown {
     return "feedback" in choice ? choice.feedback : undefined;
 }
 
-function readTransitionWireFields(
-    t: TreeSpecTransitionWire,
-): Pick<TreeGraph["transitions"][number], "feedback" | "delta" | "lessons_triggered"> {
+function pickTransitionOptionalFields(
+    t: TransitionOptionalFields,
+): Pick<TransitionOptionalFields, "feedback" | "delta" | "lessons_triggered"> {
     return {
-        ...(t.feedback !== undefined ? { feedback: t.feedback } : {}),
-        ...(t.delta !== undefined ? { delta: t.delta } : {}),
-        ...(t.lessons_triggered !== undefined ? { lessons_triggered: t.lessons_triggered } : {}),
-    };
-}
-
-function writeTransitionWireFields(
-    t: TreeGraph["transitions"][number],
-): Pick<TreeSpecTransitionWire, "feedback" | "delta" | "lessons_triggered"> {
-    return {
-        ...(t.feedback !== undefined ? { feedback: t.feedback } : {}),
-        ...(t.delta !== undefined ? { delta: t.delta } : {}),
-        ...(t.lessons_triggered !== undefined ? { lessons_triggered: t.lessons_triggered } : {}),
+        ...(t.feedback === undefined ? {} : { feedback: t.feedback }),
+        ...(t.delta === undefined ? {} : { delta: t.delta }),
+        ...(t.lessons_triggered === undefined
+            ? {}
+            : { lessons_triggered: t.lessons_triggered }),
     };
 }
 
@@ -40,7 +38,7 @@ export function decompileTreeSpec(raw: TreeSpecWire): TreeGraph {
                 id: String(c.id),
                 label: String(c.label),
                 ...(isRecord(renderHints) ? { render_hints: renderHints } : {}),
-                ...(feedback !== undefined ? { feedback } : {}),
+                ...(feedback === undefined ? {} : { feedback }),
             };
         });
         const render_hints = isRecord(n.render_hints) ? n.render_hints : {};
@@ -68,7 +66,7 @@ export function decompileTreeSpec(raw: TreeSpecWire): TreeGraph {
                 fromChoiceId: String(tt.from?.[1] ?? ""),
                 toNodeId,
                 outcome: tt.outcome,
-                ...readTransitionWireFields(tt),
+                ...pickTransitionOptionalFields(tt),
             };
         },
     );
@@ -106,7 +104,7 @@ export function compileTreeSpec(tree: TreeGraph): TreeSpecWire {
                 from: [t.fromNodeId, t.fromChoiceId],
                 to: isEnd ? END_NODE_ID : t.toNodeId,
                 ...(isEnd ? { outcome: t.outcome ?? TERMINAL_OUTCOME.AT_RISK } : {}),
-                ...writeTransitionWireFields(t),
+                ...pickTransitionOptionalFields(t),
             };
         });
     return {
