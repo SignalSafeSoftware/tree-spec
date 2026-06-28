@@ -152,6 +152,8 @@ export function runSmokePackage(config) {
     }
     const tgzPath = path.join(packDir, tgzName);
 
+    verifyTarballContents(tgzPath, pkg);
+
     const consumerDir = fs.mkdtempSync(path.join(os.tmpdir(), 'smoke-consumer-'));
 
     try {
@@ -282,4 +284,62 @@ function runTypeChecks(consumerDir, packageName, subpaths) {
         stdio: 'inherit',
     });
     console.log('type declaration checks OK');
+}
+
+function verifyTarballContents(tgzPath, pkg) {
+    const listing = execFileSync('tar', ['-tf', tgzPath], { encoding: 'utf8' })
+        .trim()
+        .split('\n')
+        .filter(Boolean);
+
+    const required = new Set([
+        'package/package.json',
+        'package/README.md',
+        'package/LICENSE',
+    ]);
+
+    const addPackagePath = (relativePath) => {
+        if (!relativePath) {
+            return;
+        }
+        required.add(`package/${relativePath.replace(/^\.\//, '')}`);
+    };
+
+    addPackagePath(pkg.main);
+    addPackagePath(pkg.types);
+
+    for (const exportEntry of Object.values(pkg.exports || {})) {
+        if (typeof exportEntry !== 'object' || exportEntry === null) {
+            continue;
+        }
+        addPackagePath(exportEntry.import);
+        addPackagePath(exportEntry.types);
+    }
+
+    for (const requiredPath of required) {
+        if (!listing.includes(requiredPath)) {
+            throw new Error(`smoke-package: tarball missing required path ${requiredPath}`);
+        }
+    }
+
+    const forbiddenPatterns = [
+        /^package\/tests\//,
+        /^package\/coverage\//,
+        /^package\/node_modules\//,
+        /^package\/\.env/,
+        /^package\/src\//,
+        /^package\/scripts\//,
+        /^package\/\.github\//,
+        /README\.standalone\.md$/,
+        /^package\/prompts\//,
+        /\/PROMPT_LOG(\.|$)/,
+    ];
+
+    for (const entry of listing) {
+        if (forbiddenPatterns.some((pattern) => pattern.test(entry))) {
+            throw new Error(`smoke-package: tarball contains unwanted path ${entry}`);
+        }
+    }
+
+    console.log(`tarball contents audit OK (${listing.length} paths)`);
 }

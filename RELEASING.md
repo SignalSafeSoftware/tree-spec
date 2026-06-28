@@ -2,6 +2,10 @@
 
 Standalone repository: [SignalSafeSoftware/tree-spec](https://github.com/SignalSafeSoftware/tree-spec).
 
+## Requirements
+
+- Node.js **>=20.19.0** for local development, CI, and publish smoke (see `package.json` `engines`).
+
 ## CI publish policy
 
 - **Checks and tests** run on every pull request.
@@ -15,6 +19,15 @@ Standalone repository: [SignalSafeSoftware/tree-spec](https://github.com/SignalS
 - **GitHub Releases do not trigger publish** in the current workflow.
 - **No npm Environment approval or provenance** in CI today.
 
+## CI tooling and npm auth
+
+- Local development and CI use **Yarn** for `install`, `test`, `build`, and `smoke:package`.
+- CI **publish** uses **`npm publish`** (non-interactive; compatible with 2FA-enabled npm accounts when auth is configured correctly).
+- Set the GitHub Actions secret **`NPM_TOKEN`** to a publish-capable npm token unless **npm trusted publishing/OIDC** is configured for the repository.
+- If the npm account or package requires **2FA for publish**, the token must support non-interactive publishing — for example a granular access token with read/write package access and **2FA bypass enabled for write actions**, or npm trusted publishing/OIDC.
+- CI writes auth to `~/.npmrc` only; no `.npmrc` is committed to the repository.
+- CI does not run `npm version` or bump versions during publish; the committed `package.json` version is published as-is.
+
 ## Before you release
 
 1. Bump `version` in `package.json`.
@@ -26,7 +39,7 @@ Standalone repository: [SignalSafeSoftware/tree-spec](https://github.com/SignalS
    yarn typecheck
    yarn test
    yarn build
-   yarn publish --dry-run
+   npm publish --dry-run
    ```
 
 4. Run artifact smoke test: `yarn smoke:package` (pack, temp consumer install, export/type checks — enforced in CI before publish).
@@ -56,4 +69,4 @@ Standalone repository: [SignalSafeSoftware/tree-spec](https://github.com/SignalS
 npm view @signalsafe/tree-spec version
 ```
 
-CI runs `yarn smoke:package` before publish.
+CI runs `yarn smoke:package`, logs the package version, then publishes with `npm publish` using `NPM_TOKEN` auth.

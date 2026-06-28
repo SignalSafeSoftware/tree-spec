@@ -2,7 +2,31 @@ import { END_NODE_ID, LEGACY_END_NODE_ID, TERMINAL_OUTCOME } from "./constants.j
 import { isRecord } from "./guards.js";
 import { readGraphPosition, writeGraphPosition } from "./renderHintsEditor.js";
 import { safeUUID } from "./randomId.js";
-import type { TerminalOutcome, TreeGraph, TreeSpecWire } from "./types.js";
+import type { TreeGraph, TreeSpecTransitionWire, TreeSpecWire } from "./types.js";
+
+function readChoiceFeedback(choice: { feedback?: unknown }): unknown | undefined {
+    return "feedback" in choice ? choice.feedback : undefined;
+}
+
+function readTransitionWireFields(
+    t: TreeSpecTransitionWire,
+): Pick<TreeGraph["transitions"][number], "feedback" | "delta" | "lessons_triggered"> {
+    return {
+        ...(t.feedback !== undefined ? { feedback: t.feedback } : {}),
+        ...(t.delta !== undefined ? { delta: t.delta } : {}),
+        ...(t.lessons_triggered !== undefined ? { lessons_triggered: t.lessons_triggered } : {}),
+    };
+}
+
+function writeTransitionWireFields(
+    t: TreeGraph["transitions"][number],
+): Pick<TreeSpecTransitionWire, "feedback" | "delta" | "lessons_triggered"> {
+    return {
+        ...(t.feedback !== undefined ? { feedback: t.feedback } : {}),
+        ...(t.delta !== undefined ? { delta: t.delta } : {}),
+        ...(t.lessons_triggered !== undefined ? { lessons_triggered: t.lessons_triggered } : {}),
+    };
+}
 
 /** Deserialize wire JSON into an authoring graph (assigns fresh transition ids). */
 export function decompileTreeSpec(raw: TreeSpecWire): TreeGraph {
@@ -11,10 +35,12 @@ export function decompileTreeSpec(raw: TreeSpecWire): TreeGraph {
         const rawChoices = (n.choices?.length ? n.choices : n.options) || [];
         const choices = rawChoices.map((c) => {
             const renderHints = "render_hints" in c ? c.render_hints : undefined;
+            const feedback = readChoiceFeedback(c);
             return {
                 id: String(c.id),
                 label: String(c.label),
                 ...(isRecord(renderHints) ? { render_hints: renderHints } : {}),
+                ...(feedback !== undefined ? { feedback } : {}),
             };
         });
         const render_hints = isRecord(n.render_hints) ? n.render_hints : {};
@@ -30,11 +56,7 @@ export function decompileTreeSpec(raw: TreeSpecWire): TreeGraph {
     }
     const transitions: TreeGraph["transitions"] = (raw.transitions || []).map(
         (t) => {
-            const tt = t as {
-                from?: [string, string];
-                to?: string;
-                outcome?: TerminalOutcome;
-            };
+            const tt = t as TreeSpecTransitionWire;
             const rawTo = String(tt.to ?? "");
             const toNodeId =
                 rawTo === END_NODE_ID || rawTo === LEGACY_END_NODE_ID
@@ -46,6 +68,7 @@ export function decompileTreeSpec(raw: TreeSpecWire): TreeGraph {
                 fromChoiceId: String(tt.from?.[1] ?? ""),
                 toNodeId,
                 outcome: tt.outcome,
+                ...readTransitionWireFields(tt),
             };
         },
     );
@@ -83,6 +106,7 @@ export function compileTreeSpec(tree: TreeGraph): TreeSpecWire {
                 from: [t.fromNodeId, t.fromChoiceId],
                 to: isEnd ? END_NODE_ID : t.toNodeId,
                 ...(isEnd ? { outcome: t.outcome ?? TERMINAL_OUTCOME.AT_RISK } : {}),
+                ...writeTransitionWireFields(t),
             };
         });
     return {

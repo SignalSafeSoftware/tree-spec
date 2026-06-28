@@ -18,6 +18,8 @@ export type TreeGraphChoice = {
     label: string;
     /** Canvas-only hints (e.g. edge appearance under `editor`). */
     render_hints?: Record<string, unknown>;
+    /** Optional micro-feedback on the choice (wire `choices[].feedback`). */
+    feedback?: unknown;
 };
 
 /**
@@ -44,6 +46,12 @@ export type TreeGraphTransition = {
     fromChoiceId: string;
     toNodeId: string;
     outcome?: TerminalOutcome;
+    /** Optional micro-feedback on the transition (overrides choice feedback at runtime). */
+    feedback?: unknown;
+    /** Optional score delta payload (wire `transitions[].delta`). */
+    delta?: unknown;
+    /** Optional lesson triggers (wire `transitions[].lessons_triggered`). */
+    lessons_triggered?: unknown;
 };
 
 /**
@@ -62,8 +70,8 @@ export type TreeSpecNodeWire = {
     type?: string;
     prompt?: string;
     render_hints?: Record<string, unknown>;
-    choices?: Array<{ id: string; label: string; render_hints?: Record<string, unknown> }>;
-    options?: Array<{ id: string; label: string }>;
+    choices?: Array<{ id: string; label: string; render_hints?: Record<string, unknown>; feedback?: unknown }>;
+    options?: Array<{ id: string; label: string; feedback?: unknown }>;
 };
 
 /** Wire shape for a single transition. */
