@@ -44,7 +44,7 @@
     "docs"
   ],
     "engines": {
-        "node": ">=20.19.0"
+        "node": ">=22.12.0"
     },
     "packageManager": "yarn@1.22.22",
     "publishConfig": {
