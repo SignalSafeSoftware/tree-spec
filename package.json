@@ -52,6 +52,7 @@
     },
     "scripts": {
         "build": "tsc -p tsconfig.build.json",
+        "lint": "yarn typecheck",
         "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.examples.json",
         "typecheck:examples": "tsc --noEmit -p tsconfig.examples.json",
         "pack:local": "npm pack --pack-destination ../../dist/reusable-npm",
@@ -66,7 +67,8 @@
         "smoke:published": "node ../../scripts/smoke-tree-spec-external-consumer.mjs --source registry",
         "prepublishOnly": "npm run build",
         "prepare": "npm run build",
-        "test": "vitest run"
+        "test": "vitest run",
+        "test:coverage": "yarn test --coverage"
     },
     "devDependencies": {
         "typescript": "^5.4.2",
