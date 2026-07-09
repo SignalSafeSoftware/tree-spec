@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Node.js 20.19 or newer (see `package.json` `engines`). Only the latest published release line receives security fixes.
+Node.js 22.12 or newer (see `package.json` `engines`). Only the latest published release line receives security fixes.
 
 ## Reporting a vulnerability
 
