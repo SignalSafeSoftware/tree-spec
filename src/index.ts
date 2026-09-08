@@ -19,15 +19,20 @@ export type {
     TreeGraphNode,
     TreeGraphTransition,
     TreeSpecIssue,
+    TreeSpecIssueCode,
+    TreeSpecIssuePath,
     TreeSpecIssueSeverity,
     TreeSpecNodeWire,
     TreeSpecTransitionWire,
     TreeSpecWire,
+    TreeSpecValidationResult,
 } from "./types.js";
 
 export { compileTreeSpec, decompileTreeSpec } from "./compile.js";
 
-export { lintTreeSpecWire } from "./lint.js";
+export { lintTreeSpecGraph, lintTreeSpecWire } from "./lint.js";
+
+export { parseTreeSpecWire } from "./parse.js";
 
 export { isRecord, isTreeSpecWire } from "./guards.js";
 
