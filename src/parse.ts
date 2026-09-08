@@ -19,7 +19,6 @@ function issue(
     message: string,
     path: TreeSpecIssuePath,
     nodeId?: string,
-    choiceId?: string,
 ): TreeSpecIssue {
     return {
         severity: "error",
@@ -27,7 +26,6 @@ function issue(
         message,
         path,
         ...(nodeId === undefined ? {} : { node_id: nodeId }),
-        ...(choiceId === undefined ? {} : { choice_id: choiceId }),
     };
 }
 

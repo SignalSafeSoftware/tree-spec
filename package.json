@@ -1,10 +1,6 @@
 {
     "name": "@signalsafe/tree-spec",
-<<<<<<< HEAD
     "version": "0.4.0",
-=======
-    "version": "0.3.4",
->>>>>>> origin/main
     "type": "module",
     "description": "TypeScript types, graph helpers, compiler utilities, and linting for the TreeSpec decision-tree format.",
     "license": "MIT",
