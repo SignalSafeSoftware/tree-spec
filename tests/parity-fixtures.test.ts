@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { END_NODE_ID, TREESPEC_WIRE_VERSION } from "../src/constants";
 import { compileTreeSpec, decompileTreeSpec } from "../src/compile";
-import { lintTreeSpecWire } from "../src/lint";
+import { lintTreeSpecGraph, lintTreeSpecWire } from "../src/lint";
 import type { TreeSpecWire } from "../src/types";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -119,25 +119,25 @@ describe("TreeSpec parity fixtures (mirrored with tree-spec-python)", () => {
     });
 });
 
-describe("TreeSpec parity gaps (Python lint_tree_spec; TS lintTreeSpecWire)", () => {
-    it("does not lint missing_target_node yet (Python code: missing_target_node)", () => {
+describe("TreeSpec graph parity (Python lint_tree_spec; TS lintTreeSpecGraph)", () => {
+    it("reports transition_target_not_found", () => {
         const raw = loadFixture("invalid-missing-target.json");
-        expect(lintTreeSpecWire(raw)).toHaveLength(0);
+        expect(lintTreeSpecGraph(raw).map((issue) => issue.code)).toContain("transition_target_not_found");
     });
 
-    it("does not lint missing_transition yet (Python code: missing_transition)", () => {
+    it("reports missing_choice_transition", () => {
         const raw = loadFixture("invalid-missing-transition.json");
-        expect(lintTreeSpecWire(raw)).toHaveLength(0);
+        expect(lintTreeSpecGraph(raw).map((issue) => issue.code)).toContain("missing_choice_transition");
     });
 
-    it("does not lint unreachable_node yet (Python code: unreachable_node)", () => {
+    it("reports unreachable_node", () => {
         const raw = loadFixture("invalid-unreachable-node.json");
-        expect(lintTreeSpecWire(raw)).toHaveLength(0);
+        expect(lintTreeSpecGraph(raw).map((issue) => issue.code)).toContain("unreachable_node");
     });
 
-    it("does not lint duplicate_transition yet (Python code: duplicate_transition)", () => {
+    it("reports duplicate_transition_source", () => {
         const raw = loadFixture("invalid-duplicate-transition.json");
-        expect(lintTreeSpecWire(raw)).toHaveLength(0);
+        expect(lintTreeSpecGraph(raw).map((issue) => issue.code)).toContain("duplicate_transition_source");
     });
 
     it("does not reject non-END outcome yet (Python parse error)", () => {

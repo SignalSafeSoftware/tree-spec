@@ -4,7 +4,7 @@ runSmokePackage({
     runtimeChecks: [
         {
             subpath: '.',
-            exports: ['TREESPEC_WIRE_VERSION', 'lintTreeSpecWire', 'compileTreeSpec'],
+            exports: ['TREESPEC_WIRE_VERSION', 'lintTreeSpecWire', 'lintTreeSpecGraph', 'parseTreeSpecWire', 'compileTreeSpec'],
         },
     ],
     typecheckSubpaths: ['.'],

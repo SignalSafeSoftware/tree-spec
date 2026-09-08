@@ -8,8 +8,8 @@ This document describes how **unknown JSON fields** (keys not defined in the Tre
 | ----- | -------------- |
 | **Stable contract** | Only documented wire keys are guaranteed across tools and languages. |
 | **Extension / product metadata** | Prefer `_meta` (and documented namespaces such as `_meta.graph_editor`). |
-| **Parse / guard** | Neither TS nor Python **rejects** unknown top-level keys by default. |
-| **Lint** | Neither implementation emits warnings for unknown keys today. |
+| **Parse / guard** | Strict decoders reject malformed known fields while allowing unknown extension keys; legacy guards remain permissive. |
+| **Lint** | Graph lints report structural issues with stable codes/paths and ignore unknown keys. |
 | **Round-trip through models** | Unknown keys are **not preserved** except in documented opaque buckets (see below). |
 
 Python parity details live in the mirrored doc in `tree-spec-python/docs/compatibility.md`.
@@ -20,17 +20,25 @@ Python parity details live in the mirrored doc in `tree-spec-python/docs/compati
 
 ### Parse and guard
 
-- `isTreeSpecWire(value)` checks only that the value is an object with `start_node` and `nodes`. **Unknown root keys are allowed.**
-- There is no strict JSON Schema pass in this package; hosts may add server-side validation.
+- `isTreeSpecWire(value)` remains a lightweight guard that checks an object with `start_node` and `nodes`. **Unknown root keys are allowed.**
+- `parseTreeSpecWire(value)` is the strict untrusted-input decoder. It validates
+  known fields, preserves documented opaque buckets, normalizes legacy forms,
+  and returns structured issues with stable `code` and `path` values.
 
 ### Lint (`lintTreeSpecWire`)
 
-Validates a small set of **known** rules today:
+`lintTreeSpecWire` validates a small set of **known** wire rules:
 
 - `wire_version` shape and supported value
 - END transitions must include `outcome`
 
 **Unknown fields are not linted** (no warning, no error).
+
+`lintTreeSpecGraph` is the separate generic graph pass. It reports duplicate
+choices and transition sources, unknown endpoints, missing choice transitions,
+unreachable nodes, and reachable nodes without a terminal path. Cycles are
+allowed when every reachable node has a route to `END`; a cycle with no exit
+receives `no_terminal_path`.
 
 ### Compile / decompile (`compileTreeSpec` / `decompileTreeSpec`)
 

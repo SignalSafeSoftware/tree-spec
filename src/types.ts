@@ -12,6 +12,28 @@ export type TerminalOutcome = (typeof TERMINAL_OUTCOME)[keyof typeof TERMINAL_OU
 /** Severity value for {@link TreeSpecIssue}; derived from {@link TREE_SPEC_ISSUE_SEVERITY}. */
 export type TreeSpecIssueSeverity = (typeof TREE_SPEC_ISSUE_SEVERITY)[keyof typeof TREE_SPEC_ISSUE_SEVERITY];
 
+/** Stable diagnostic identifiers emitted by the strict decoder and graph linter. */
+export type TreeSpecIssueCode =
+    | "invalid_root"
+    | "invalid_field_type"
+    | "invalid_field_value"
+    | "unsupported_wire_version"
+    | "start_node_not_found"
+    | "node_without_choices"
+    | "duplicate_choice_id"
+    | "duplicate_transition_source"
+    | "transition_node_not_found"
+    | "transition_choice_not_found"
+    | "transition_target_not_found"
+    | "missing_choice_transition"
+    | "missing_terminal_outcome"
+    | "unexpected_nonterminal_outcome"
+    | "unreachable_node"
+    | "no_terminal_path";
+
+/** A JSON path segment used to locate a validation diagnostic. */
+export type TreeSpecIssuePath = readonly (string | number)[];
+
 /** Single user-visible choice on a node. */
 export type TreeGraphChoice = {
     id: string;
@@ -105,6 +127,16 @@ export type TreeSpecWire = {
 export type TreeSpecIssue = {
     severity: TreeSpecIssueSeverity;
     message: string;
+    /** Stable machine-readable identifier when produced by strict validation. */
+    code?: TreeSpecIssueCode;
+    /** JSON path into the decoded document when available. */
+    path?: TreeSpecIssuePath;
     node_id?: string;
     choice_id?: string;
+};
+
+/** Result returned by {@link parseTreeSpecWire} for untrusted JSON input. */
+export type TreeSpecValidationResult = {
+    value: TreeSpecWire | null;
+    issues: readonly TreeSpecIssue[];
 };

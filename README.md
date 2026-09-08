@@ -12,6 +12,8 @@ Generic **TreeSpec** wire format (`TreeSpecWire`), authoring graph model (`TreeG
 - Define the **TreeSpec wire JSON contract** (types, constants, guards).
 - **Compile / decompile** between wire JSON and an authoring graph (`TreeGraph`).
 - **Lint** wire payloads (`lintTreeSpecWire`) and normalize legacy shapes (`options`, legacy END ids).
+- Strictly decode untrusted JSON with `parseTreeSpecWire`, including stable issue codes and paths.
+- Validate generic graph relationships with `lintTreeSpecGraph` without applying product-specific rules.
 - Read/write **graph-editor metadata** namespaces (`readGraphEditorMeta`, `writeGraphEditorMeta`).
 
 See [docs/compatibility.md](./docs/compatibility.md) for how **unknown JSON fields** are handled vs Python (`extra="ignore"`, compile/decompile lossiness, and `_meta` extension policy).
@@ -84,6 +86,35 @@ console.log(roundTrip.transitions);
 // []
 console.log(issues);
 ```
+
+## Strict decoding and graph validation
+
+Use `parseTreeSpecWire` at an untrusted JSON boundary. It returns a normalized
+wire value only when field and graph validation succeeds; otherwise `value` is
+`null` and each issue includes a stable `code` and JSON-like `path`. Legacy
+`options` collections and legacy END IDs are normalized, while `_meta`, render
+hints, feedback, deltas, lessons, and other JSON extension buckets remain
+opaque.
+
+```ts
+import { lintTreeSpecGraph, parseTreeSpecWire } from "@signalsafe/tree-spec";
+
+const decoded = parseTreeSpecWire(rawPayload);
+if (decoded.value === null) {
+    for (const problem of decoded.issues) {
+        console.error(problem.code, problem.path, problem.message);
+    }
+}
+
+// Apply generic graph checks to an already trusted/typed wire document.
+const graphIssues = lintTreeSpecGraph(wire);
+```
+
+The graph linter reports duplicate choices and transition sources, missing or
+unknown transition endpoints, unreachable nodes, missing choice transitions,
+and reachable graphs without a terminal path. Hosts remain responsible for
+application-specific score, presentation, authorization, and publication
+rules.
 
 ## Examples
 
