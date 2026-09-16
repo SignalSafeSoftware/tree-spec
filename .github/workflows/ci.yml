@@ -150,9 +150,40 @@ jobs:
             - name: Smoke-test packed artifact
               run: yarn smoke:package
 
+    runtime-compatibility:
+        name: Packed runtime (Node ${{ matrix.node-version }})
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                node-version: ["19.0.0", "19", "20", "21", "22", "23", "24"]
+        steps:
+            - uses: actions/checkout@v7
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: "24"
+            - name: Build package with development tooling
+              run: |
+                  corepack enable
+                  yarn install --frozen-lockfile
+                  yarn build
+                  mkdir -p "$RUNNER_TEMP/tree-spec-package"
+                  npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/tree-spec-package"
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - name: Install and test as an external consumer
+              run: |
+                  mkdir -p "$RUNNER_TEMP/tree-spec-consumer"
+                  cp tests/runtime-compatibility.mjs "$RUNNER_TEMP/tree-spec-consumer/"
+                  cd "$RUNNER_TEMP/tree-spec-consumer"
+                  npm init -y
+                  npm install --engine-strict --ignore-scripts --no-audit --no-fund "$RUNNER_TEMP"/tree-spec-package/*.tgz
+                  node runtime-compatibility.mjs
+
     publish:
         name: Publish
-        needs: [checks, tests, scan, smoke-package]
+        needs: [checks, tests, scan, smoke-package, runtime-compatibility]
         if: |
             (
               (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||

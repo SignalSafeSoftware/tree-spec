@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-No unreleased changes recorded.
+### Changed
+
+- Lower the published runtime requirement to Node.js >=19.0.0.
+- Test packed-package behavior on Node 19, 20, 21, 22, 23, and 24, including the Node 19.0.0 minimum. Keep build, coverage, and development tooling on Node 22/24.
 
 ## [0.4.0] - 2026-09-08
 
