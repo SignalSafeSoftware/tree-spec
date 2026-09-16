@@ -476,7 +476,7 @@ Cross-language fixture JSON should stay in sync in your product CI when wire rul
 
 ## Development
 
-Requires Node.js **>=22.12.0** (`engines.node`). CI runs checks, tests, and smoke on Node **22** and **24**; publish uses Node **24**. Node 20 is no longer supported (GitHub Actions Node 20 deprecation).
+Requires Node.js **>=19.0.0** to run the published package. CI installs the packed artifact with strict engine checks and tests parsing, validation, graph round-trips, and UUID generation on Node **19, 20, 21, 22, 23, and 24**, plus the exact **19.0.0** minimum. Development, unit tests, and coverage use Node **22/24** because the development tools have higher requirements; publishing uses Node **24**. Use Node **24** for local development. Node 19 is end-of-life; compatibility does not imply security support for that runtime.
 
 ```bash
 yarn install

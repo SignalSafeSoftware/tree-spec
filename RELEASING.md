@@ -4,7 +4,8 @@ Standalone repository: [SignalSafeSoftware/tree-spec](https://github.com/SignalS
 
 ## Requirements
 
-- Node.js **>=22.12.0** for local development, CI, and publish smoke (see `package.json` `engines`). Node 20 is no longer supported (GitHub Actions Node 20 deprecation).
+- Use Node.js **24** for local development and publishing. The published package requires **>=19.0.0**; development tools require newer Node versions.
+- Before release, require the runtime compatibility matrix (Node 19–24 and the exact 19.0.0 minimum), unit tests, build checks, and package smoke tests to pass.
 
 ## CI publish policy
 

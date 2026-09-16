@@ -1,5 +1,18 @@
 # TreeSpec unknown-field compatibility
 
+## Node.js runtime compatibility
+
+The published ESM package requires Node.js >=19.0.0 and has no production
+dependencies. CI installs its tarball into an isolated consumer with
+`npm install --engine-strict`, then exercises parsing, invalid-input diagnostics,
+compile/decompile round-trips, legacy terminal normalization, and Web Crypto UUID
+generation on Node 19.0.0 and the latest Node 19, 20, 21, 22, 23, and 24 releases.
+
+Build and Vitest coverage jobs use Node 22/24; their development dependencies are
+not installed in the runtime compatibility consumer. Use Node 24 for development.
+Node 19 compatibility does not extend the upstream runtime's security support.
+
+
 This document describes how **unknown JSON fields** (keys not defined in the TreeSpec wire contract) are handled in `@signalsafe/tree-spec` (TypeScript) and how that compares to [`signalsafe-tree-spec`](https://github.com/SignalSafeSoftware/tree-spec-python) (Python / Pydantic).
 
 **Policy summary**
