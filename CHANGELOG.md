@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 No unreleased changes recorded.
 
+## [0.4.2] - 2026-10-09
+
+### Changed
+
+- `parseTreeSpecWire` attaches `node_id` (and `choice_id` where the choice ID is known) to node and choice field issues so editors can anchor them.
+- `null` is treated as absent for `wire_version`, `outcome`, `choices`, `options`, `render_hints`, and `_meta`, matching Pydantic `Optional` serialization. Opaque JSON extension values such as `feedback: null` are still preserved.
+
 ## [0.4.1] - 2026-09-16
 
 ### Changed

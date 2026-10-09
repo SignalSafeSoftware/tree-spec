@@ -19,6 +19,7 @@ function issue(
     message: string,
     path: TreeSpecIssuePath,
     nodeId?: string,
+    choiceId?: string,
 ): TreeSpecIssue {
     return {
         severity: "error",
@@ -26,6 +27,7 @@ function issue(
         message,
         path,
         ...(nodeId === undefined ? {} : { node_id: nodeId }),
+        ...(choiceId === undefined ? {} : { choice_id: choiceId }),
     };
 }
 
@@ -50,14 +52,16 @@ function requiredText(
     value: unknown,
     path: TreeSpecIssuePath,
     issues: TreeSpecIssue[],
+    nodeId?: string,
+    choiceId?: string,
 ): string | null {
     if (typeof value !== "string") {
-        issues.push(issue("invalid_field_type", "This field must be a string.", path));
+        issues.push(issue("invalid_field_type", "This field must be a string.", path, nodeId, choiceId));
         return null;
     }
     const text = value.trim();
     if (text.length === 0) {
-        issues.push(issue("invalid_field_value", "This field must not be blank.", path));
+        issues.push(issue("invalid_field_value", "This field must not be blank.", path, nodeId, choiceId));
         return null;
     }
     return text;
@@ -67,38 +71,49 @@ function optionalJson(
     value: unknown,
     path: TreeSpecIssuePath,
     issues: TreeSpecIssue[],
+    nodeId?: string,
+    choiceId?: string,
 ): JsonValue | undefined {
     if (value === undefined) return undefined;
     if (!isJsonValue(value)) {
-        issues.push(issue("invalid_field_type", "This field must contain JSON-compatible data.", path));
+        issues.push(issue("invalid_field_type", "This field must contain JSON-compatible data.", path, nodeId, choiceId));
         return undefined;
     }
     return value;
 }
 
+/** `null` counts as absent so Pydantic-style `Optional` serializations decode unchanged. */
 function optionalObject(
     value: unknown,
     path: TreeSpecIssuePath,
     issues: TreeSpecIssue[],
+    nodeId?: string,
+    choiceId?: string,
 ): { [key: string]: JsonValue } | undefined {
-    const parsed = optionalJson(value, path, issues);
+    if (value === null) return undefined;
+    const parsed = optionalJson(value, path, issues, nodeId, choiceId);
     if (parsed === undefined) return undefined;
     if (!isRecord(parsed) || Array.isArray(parsed)) {
-        issues.push(issue("invalid_field_type", "This field must be a JSON object.", path));
+        issues.push(issue("invalid_field_type", "This field must be a JSON object.", path, nodeId, choiceId));
         return undefined;
     }
     return parsed;
 }
 
-function parseChoice(value: unknown, path: TreeSpecIssuePath, issues: TreeSpecIssue[]): ParsedChoice | null {
+function parseChoice(
+    value: unknown,
+    path: TreeSpecIssuePath,
+    issues: TreeSpecIssue[],
+    nodeId: string,
+): ParsedChoice | null {
     if (!isRecord(value)) {
-        issues.push(issue("invalid_field_type", "Each choice must be an object.", path));
+        issues.push(issue("invalid_field_type", "Each choice must be an object.", path, nodeId));
         return null;
     }
-    const id = requiredText(value.id, [...path, "id"], issues);
-    const label = requiredText(value.label, [...path, "label"], issues);
-    const renderHints = optionalObject(value.render_hints, [...path, "render_hints"], issues);
-    const feedback = optionalJson(value.feedback, [...path, "feedback"], issues);
+    const id = requiredText(value.id, [...path, "id"], issues, nodeId);
+    const label = requiredText(value.label, [...path, "label"], issues, nodeId);
+    const renderHints = optionalObject(value.render_hints, [...path, "render_hints"], issues, nodeId, id ?? undefined);
+    const feedback = optionalJson(value.feedback, [...path, "feedback"], issues, nodeId, id ?? undefined);
     if (id === null || label === null) return null;
     const choice = {
         id,
@@ -114,13 +129,13 @@ function parseNode(value: unknown, nodeId: string, path: TreeSpecIssuePath, issu
         issues.push(issue("invalid_field_type", "Each node must be an object.", path, nodeId));
         return null;
     }
-    const type = requiredText(value.type, [...path, "type"], issues);
-    const prompt = requiredText(value.prompt, [...path, "prompt"], issues);
-    const renderHints = optionalObject(value.render_hints, [...path, "render_hints"], issues);
+    const type = requiredText(value.type, [...path, "type"], issues, nodeId);
+    const prompt = requiredText(value.prompt, [...path, "prompt"], issues, nodeId);
+    const renderHints = optionalObject(value.render_hints, [...path, "render_hints"], issues, nodeId);
     const choiceValues: TreeSpecNodeWire["choices"] = [];
     const optionValues: TreeSpecNodeWire["options"] = [];
-    const choicesValue = value.choices;
-    const optionsValue = value.options;
+    const choicesValue = value.choices ?? undefined;
+    const optionsValue = value.options ?? undefined;
     if (choicesValue !== undefined && !Array.isArray(choicesValue)) {
         issues.push(issue("invalid_field_type", "choices must be an array.", [...path, "choices"], nodeId));
     }
@@ -136,7 +151,7 @@ function parseNode(value: unknown, nodeId: string, path: TreeSpecIssuePath, issu
         issues.push(issue("invalid_field_value", "A node must define choices or legacy options.", [...path, "choices"], nodeId));
     } else {
         for (const [index, rawChoice] of collection.entries()) {
-            const parsed = parseChoice(rawChoice, [...path, Array.isArray(choicesValue) ? "choices" : "options", index], issues);
+            const parsed = parseChoice(rawChoice, [...path, Array.isArray(choicesValue) ? "choices" : "options", index], issues, nodeId);
             if (parsed === null) continue;
             if (Array.isArray(choicesValue)) choiceValues.push(parsed);
             else optionValues.push({ id: parsed.id, label: parsed.label, ...(parsed.feedback === undefined ? {} : { feedback: parsed.feedback }) });
@@ -164,7 +179,7 @@ function parseTransition(value: unknown, path: TreeSpecIssuePath, issues: TreeSp
     const fromNodeId = requiredText(value.from[0], [...path, "from", 0], issues);
     const fromChoiceId = requiredText(value.from[1], [...path, "from", 1], issues);
     const to = requiredText(value.to, [...path, "to"], issues);
-    const rawOutcome = value.outcome;
+    const rawOutcome = value.outcome ?? undefined;
     let outcome: TreeSpecTransitionWire["outcome"];
     if (rawOutcome !== undefined && rawOutcome !== "safe" && rawOutcome !== "at_risk" && rawOutcome !== "compromised") {
         issues.push(issue("invalid_field_value", "outcome must be safe, at_risk, or compromised.", [...path, "outcome"]));
@@ -209,7 +224,7 @@ export function parseTreeSpecWire(raw: unknown): TreeSpecValidationResult {
             if (parsed !== null) transitions.push(parsed);
         }
     }
-    const rawWireVersion = raw.wire_version;
+    const rawWireVersion = raw.wire_version ?? undefined;
     let wireVersion: number | undefined;
     if (rawWireVersion !== undefined && (typeof rawWireVersion !== "number" || !Number.isInteger(rawWireVersion))) {
         issues.push(issue("invalid_field_type", "wire_version must be an integer when present.", ["tree_spec", "wire_version"]));
