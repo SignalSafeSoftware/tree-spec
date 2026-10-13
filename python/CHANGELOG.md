@@ -1,12 +1,5 @@
 # Changelog
 
-## Unreleased — repository consolidation
-
-- Own Python and TypeScript in one tree-spec repository.
-- Preserve package/import names and wire behavior; publish language-specific archives.
-- Verify fixture parity and distribution isolation in CI.
-
-
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
@@ -14,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-No unreleased changes recorded.
+### Changed
+
+- Monitor Python uv dependencies alongside npm/Yarn and Actions; run dependency review through CI on PRs and include high-severity development/unknown-scope vulnerabilities.
+
+- Use `ci.yml` to call independent reusable TypeScript/npm and Python/PyPI workflows in parallel, with separate manual publish flags and coverage artifacts.
+
+- Consolidate Python and TypeScript in one repository, under `python/` and `typescript/`.
+- Preserve registry names, public imports and runtime behavior.
+- Validate cross-language fixtures and separate distribution contents in CI.
+- Use independent `ts-v*` (npm) and `py-v*` (PyPI) releases; reject tags that do not match the selected package version.
+- Update build paths, documentation and local artifact commands; remove obsolete monorepo helpers.
 
 ## [0.3.0] - 2026-09-08
 
@@ -95,7 +98,7 @@ No unreleased changes recorded.
 
 - [RELEASING.md](./RELEASING.md) preflight verifies `LICENSE` and MIT metadata before release.
 
-[Unreleased]: https://github.com/SignalSafeSoftware/tree-spec-python/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/SignalSafeSoftware/tree-spec/tree/main/python
 [0.2.0]: https://github.com/SignalSafeSoftware/tree-spec-python/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/SignalSafeSoftware/tree-spec-python/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/SignalSafeSoftware/tree-spec-python/compare/v0.1.1...v0.1.2

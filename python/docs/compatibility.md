@@ -12,7 +12,7 @@ This document describes how **unknown JSON fields** are handled in **`signalsafe
 | **Lint** | `lint_tree_spec` does not warn on unknown keys; graph diagnostics use the canonical stable codes and optional paths shared with TypeScript. |
 | **Serialization** | `model_dump(by_alias=True)` emits only modeled fields plus preserved dict buckets. |
 
-TypeScript details: [`tree-spec/docs/compatibility.md`](https://github.com/SignalSafeSoftware/tree-spec/blob/main/docs/compatibility.md).
+TypeScript details: [`tree-spec/typescript/docs/compatibility.md`](https://github.com/SignalSafeSoftware/tree-spec/blob/main/typescript/docs/compatibility.md).
 
 Graph issue codes are shared with TypeScript (`duplicate_choice_id`,
 `duplicate_transition_source`, `transition_node_not_found`,

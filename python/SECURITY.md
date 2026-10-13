@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Python 3.12 and 3.13 (see `pyproject.toml` `requires-python`). Only the latest published release line receives security fixes.
+Python >=3.12,<4 (see `pyproject.toml`); CI currently tests Python 3.12 and 3.13. Only the latest published release line receives security fixes.
 
 ## Reporting a vulnerability
 

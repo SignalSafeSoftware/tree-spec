@@ -22,4 +22,4 @@ python/requirements-dev.txt
 **/__pycache__/
 **/.pytest_cache/
 
-artifacts/
+**/artifacts/

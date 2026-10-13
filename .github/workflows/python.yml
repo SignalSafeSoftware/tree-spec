@@ -1,21 +1,21 @@
-name: CI
+name: TreeSpec Python
 
 on:
-    workflow_dispatch:
+    workflow_call:
         inputs:
             publish:
-                description: Publish Python after successful checks
+                description: Publish this language after its required checks pass
                 type: boolean
+                required: false
                 default: false
-    push:
-        branches: [main]
-        tags: ["py-v*"]
-    pull_request:
-        branches: [main, develop]
-        types: [opened, synchronize, reopened]
+        secrets:
+            PACKAGES_SONAR_TOKEN:
+                required: false
+            PYPI_API_TOKEN:
+                required: false
 
 concurrency:
-    group: ci-${{ github.workflow }}-${{ github.ref }}
+    group: tree-spec-python-${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
 permissions:
@@ -91,7 +91,7 @@ jobs:
               if: matrix.python-version == '3.12'
               uses: actions/upload-artifact@v7
               with:
-                  name: coverage
+                  name: coverage-python
                   path: python/coverage.xml
 
     scan:
@@ -118,7 +118,7 @@ jobs:
             - name: Download coverage
               uses: actions/download-artifact@v8
               with:
-                  name: coverage
+                  name: coverage-python
                   path: python
 
             - name: Verify coverage report
@@ -136,7 +136,7 @@ jobs:
               uses: actions/github-script@v9
               with:
                   script: |
-                      const body = `SonarCloud analysis for \`tree-spec-python\` (\`SignalSafeSoftware_tree-spec\`) completed with result \`${{ job.status }}\`.`;
+                      const body = `SonarCloud analysis for \`signalsafe-tree-spec\` (\`SignalSafeSoftware_tree-spec\`) completed with result \`${{ job.status }}\`.`;
                       await github.rest.issues.createComment({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
@@ -173,17 +173,15 @@ jobs:
         name: Publish
         needs: [checks, tests, scan, smoke-package, distributions]
         if: |
-            (
-              (github.event_name == 'workflow_dispatch' && inputs.publish && github.ref == 'refs/heads/main') ||
-              (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/py-v'))
-            ) &&
+            !cancelled() && inputs.publish &&
             needs.checks.result == 'success' &&
             needs.tests.result == 'success' &&
+            needs.smoke-package.result == 'success' &&
+            needs.distributions.result == 'success' &&
             (needs.scan.result == 'success' || needs.scan.result == 'skipped')
         runs-on: ubuntu-latest
         permissions:
             contents: read
-            id-token: write
         environment: pypi
         steps:
             - uses: actions/checkout@v7
@@ -196,6 +194,17 @@ jobs:
               with:
                   enable-cache: true
 
+            - name: Verify Python release tag version
+              if: github.ref_type == 'tag'
+              run: |
+                  python - <<'PYCODE'
+                  import os
+                  from pathlib import Path
+                  version = Path('VERSION').read_text().strip()
+                  if os.environ['GITHUB_REF_NAME'] != f'py-v{version}':
+                      raise SystemExit('Python release tag must match python/VERSION')
+                  PYCODE
+
             - name: Build distributions
               run: |
                   uv venv --seed
@@ -204,10 +213,21 @@ jobs:
                   .venv/bin/python -m build
                   .venv/bin/twine check dist/*
 
+            - name: Verify PyPI credential
+              env:
+                  PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+              run: |
+                  if [ -z "$PYPI_API_TOKEN" ]; then
+                      echo "::error::Configure a package-scoped PYPI_API_TOKEN repository or pypi environment secret before publishing."
+                      exit 1
+                  fi
+
             - name: Publish to PyPI
               uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
               with:
                   packages-dir: python/dist/
+                  password: ${{ secrets.PYPI_API_TOKEN }}
+                  attestations: false
 
     distributions:
         name: Cross-language contract and artifact boundaries

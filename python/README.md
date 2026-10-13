@@ -6,7 +6,7 @@ Python implementation of the **TreeSpec wire contract**: Pydantic models, parsin
 |---|---|
 | **PyPI distribution name** | `signalsafe-tree-spec` |
 | **Import path** | `deliveryplus_tree_spec` (stable; historical name) |
-| **GitHub** | [SignalSafeSoftware/tree-spec-python](https://github.com/SignalSafeSoftware/tree-spec-python) |
+| **GitHub** | [SignalSafeSoftware/tree-spec](https://github.com/SignalSafeSoftware/tree-spec/tree/main/python) |
 | **Python** | 3.12+ (`requires-python >=3.12,<4.0`) |
 | **Runtime dependency** | Pydantic v2 (`pydantic>=2.11.3,<3`) |
 
@@ -117,7 +117,7 @@ Legacy payloads may use `options` instead of `choices` and legacy terminal ids; 
 
 ## Python / TypeScript parity
 
-| Concern | Python (`tree-spec-python`) | TypeScript (`@signalsafe/tree-spec`) |
+| Concern | Python (`python/`) | TypeScript (`@signalsafe/tree-spec`) |
 |---|---|---|
 | Wire models & lint | Pydantic models, `lint_tree_spec` | `TreeSpecWire`, `lintTreeSpecWire`, `lintTreeSpecGraph` |
 | Authoring graph compile | — | `compileTreeSpec` / `decompileTreeSpec` |

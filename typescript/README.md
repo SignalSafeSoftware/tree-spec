@@ -486,7 +486,7 @@ Example transition with feedback:
 | Layer | Package / repo | Role |
 |-------|----------------|------|
 | **TypeScript core (this package)** | `@signalsafe/tree-spec` | Wire format, compile/decompile, lint |
-| **Python core** | [`signalsafe-tree-spec`](https://github.com/SignalSafeSoftware/tree-spec-python) (`deliveryplus_tree_spec`) | Backend parity: models, lint, builder, patch |
+| **Python core** | [`signalsafe-tree-spec`](https://github.com/SignalSafeSoftware/tree-spec/tree/main/python) (`deliveryplus_tree_spec`) | Backend parity: models, lint, builder, patch |
 | **Simulator runtime** | `@signalsafe/simulator-core` | Headless session stepping |
 | **Editor stack** | `@signalsafe/tree-spec-editor-core` → `-react` → `-editor` | Authoring UI layers |
 
@@ -511,4 +511,4 @@ See [SECURITY.md](./SECURITY.md). Parsing and lint enforce the documented wire c
 ## Changelog and releases
 
 - [CHANGELOG.md](./CHANGELOG.md)
-- [RELEASING.md](./RELEASING.md)
+- [RELEASING.md](../RELEASING.md)

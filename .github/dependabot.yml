@@ -1,10 +1,17 @@
 version: 2
 updates:
+  # GitHub Actions scans all workflow files from the repository root.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+  # Yarn workspaces: root yarn.lock owns the typescript/package.json dependencies.
   - package-ecosystem: "npm"
     directory: "/"
+    schedule:
+      interval: "weekly"
+  # Python's independent manifest and lockfile live under python/.
+  - package-ecosystem: "uv"
+    directory: "/python"
     schedule:
       interval: "weekly"

@@ -15,6 +15,7 @@
         "test:coverage": "yarn --cwd typescript test:coverage",
         "smoke:package": "yarn --cwd typescript smoke:package",
         "publish:dry-run": "yarn --cwd typescript publish:dry-run",
-        "check:distributions": "node scripts/check-distributions.mjs"
+        "check:distributions": "node scripts/check-distributions.mjs",
+        "pack:local": "yarn --cwd typescript pack:local"
     }
 }

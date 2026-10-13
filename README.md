@@ -22,3 +22,15 @@ After building both distributions, run `yarn check:distributions` at the root.
 
 TypeScript uses `ts-v*` release tags and Python uses `py-v*` tags. Publication requires
 explicit authorization and passing the corresponding workflow and shared boundary checks.
+
+## Generated output
+
+`typescript/dist/` contains compiled JavaScript and declarations.
+`typescript/artifacts/` contains local npm tarballs (`yarn pack:local`).
+`typescript/coverage/` contains TypeScript coverage reports.
+`python/dist/` contains the wheel (`.whl`) and source archive (`.tar.gz`)
+produced by `uv run python -m build` for upload to PyPI.
+Python caches, build metadata and its virtual environment stay inside `python/`.
+All generated output is ignored by Git. Root `node_modules/` and `yarn.lock`
+are shared Yarn workspace dependencies and remain at the repository root.
+Root `docs/` and `scripts/` own cross-language documentation and checks.

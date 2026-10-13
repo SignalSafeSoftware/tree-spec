@@ -1,6 +1,6 @@
 # TreeSpec parity fixtures
 
-Mirrored JSON fixtures shared with `tree-spec-python/tests/fixtures/` (identical
+Mirrored JSON fixtures shared with `tree-spec/python/tests/fixtures/` (identical
 filenames and payloads). Keep both directories aligned when adding or changing
 fixtures.
 
@@ -30,7 +30,7 @@ fixtures.
 | `invalid-unreachable-node.json` | Lint: `unreachable_node` | **Gap:** lint passes today |
 | `invalid-duplicate-transition.json` | Lint: `duplicate_transition` | **Gap:** lint passes today |
 
-Parity tests in `tests/parity-fixtures.test.ts` and `tree-spec-python/tests/test_parity_fixtures.py`
+Parity tests in `tests/parity-fixtures.test.ts` and `tree-spec/python/tests/test_parity_fixtures.py`
 encode shared expectations and document known gaps without changing runtime behavior.
 
-Unknown-field policy (extension keys, compile/decompile lossiness, TS vs Python): see [../docs/compatibility.md](../docs/compatibility.md).
+Unknown-field policy (extension keys, compile/decompile lossiness, TS vs Python): see [../../docs/compatibility.md](../../docs/compatibility.md).

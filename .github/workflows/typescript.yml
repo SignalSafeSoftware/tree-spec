@@ -1,0 +1,262 @@
+name: TreeSpec Typescript
+
+on:
+    workflow_call:
+        inputs:
+            publish:
+                description: Publish this language after its required checks pass
+                type: boolean
+                required: false
+                default: false
+        secrets:
+            PACKAGES_SONAR_TOKEN:
+                required: false
+            NPM_TOKEN:
+                required: false
+
+permissions:
+    contents: read
+
+env:
+    PUBLISH_NODE_VERSION: "24"
+
+jobs:
+    checks:
+        name: Checks (Node ${{ matrix.node-version }})
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                node-version: ["22", "24"]
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Enable Yarn
+              run: corepack enable
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Lint
+              run: yarn lint
+
+            - name: Typecheck
+              run: yarn typecheck
+
+            - name: Build
+              run: yarn build
+
+    tests:
+        name: Tests (Node ${{ matrix.node-version }})
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                node-version: ["22", "24"]
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Enable Yarn
+              run: corepack enable
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Test with coverage
+              run: yarn test:coverage
+
+            - name: Upload coverage
+              if: matrix.node-version == '24'
+              uses: actions/upload-artifact@v7
+              with:
+                  name: coverage-typescript
+                  path: typescript/coverage/lcov.info
+
+    scan:
+        name: SonarCloud scan
+        needs: tests
+        if: |
+            github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
+        env:
+            SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: ${{ env.PUBLISH_NODE_VERSION }}
+
+            - name: Enable Yarn
+              run: corepack enable
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Test with coverage
+              run: yarn test:coverage
+
+            - name: Verify coverage report
+              run: |
+                  test -f typescript/coverage/lcov.info
+                  grep '^SF:src/' typescript/coverage/lcov.info
+
+            - name: SonarCloud scan
+              uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+              with:
+                  projectBaseDir: typescript
+              env:
+                  SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
+
+            - name: Sonar PR comment
+              if: github.event_name == 'pull_request'
+              uses: actions/github-script@v9
+              with:
+                  script: |
+                      const body = `SonarCloud analysis for \`@signalsafe/tree-spec\` (\`signalsafe-package-tree-spec\`) completed with result \`${{ job.status }}\`.`;
+                      await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: context.issue.number,
+                          body,
+                      });
+
+    smoke-package:
+        name: Smoke package (Node ${{ matrix.node-version }})
+        needs: [checks, tests]
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                node-version: ["22", "24"]
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Enable Yarn
+              run: corepack enable
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Smoke-test packed artifact
+              run: yarn smoke:package
+
+    runtime-compatibility:
+        name: Packed runtime (Node ${{ matrix.node-version }})
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                node-version: ["19.0.0", "19", "20", "21", "22", "23", "24"]
+        steps:
+            - uses: actions/checkout@v7
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: "24"
+            - name: Build package with development tooling
+              run: |
+                  corepack enable
+                  yarn install --frozen-lockfile
+                  yarn build
+                  mkdir -p "$RUNNER_TEMP/tree-spec-package"
+                  npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/tree-spec-package" --workspace @signalsafe/tree-spec
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - name: Install and test as an external consumer
+              run: |
+                  mkdir -p "$RUNNER_TEMP/tree-spec-consumer"
+                  cp typescript/tests/runtime-compatibility.mjs "$RUNNER_TEMP/tree-spec-consumer/"
+                  cd "$RUNNER_TEMP/tree-spec-consumer"
+                  npm init -y
+                  npm install --engine-strict --ignore-scripts --no-audit --no-fund "$RUNNER_TEMP"/tree-spec-package/*.tgz
+                  node runtime-compatibility.mjs
+
+    publish:
+        name: Publish
+        needs: [checks, tests, scan, smoke-package, runtime-compatibility, distributions]
+        if: |
+            !cancelled() && inputs.publish &&
+            needs.checks.result == 'success' &&
+            needs.tests.result == 'success' &&
+            needs.smoke-package.result == 'success' &&
+            needs.runtime-compatibility.result == 'success' &&
+            needs.distributions.result == 'success' &&
+            (needs.scan.result == 'success' || needs.scan.result == 'skipped')
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: ${{ env.PUBLISH_NODE_VERSION }}
+
+            - name: Enable Yarn
+              run: corepack enable
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Verify artifact before publish
+              run: yarn smoke:package
+
+            - name: Verify npm release tag version
+              if: github.ref_type == 'tag'
+              run: |
+                  node --input-type=module - <<'JS'
+                  import { readFileSync } from 'node:fs';
+                  const { version } = JSON.parse(readFileSync('typescript/package.json', 'utf8'));
+                  if (process.env.GITHUB_REF_NAME !== `ts-v${version}`) {
+                      throw new Error('npm release tag must match typescript/package.json version');
+                  }
+                  JS
+
+            - name: Check package version
+              run: node -e "const p=require('./typescript/package.json'); console.log(p.name, p.version)"
+
+            - name: Configure npm auth
+              run: |
+                echo "registry=https://registry.npmjs.org/" > ~/.npmrc
+                echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+              env:
+                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - name: Publish to npm
+              run: npm publish --access public --ignore-scripts
+              working-directory: typescript
+              env:
+                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    distributions:
+        name: Both distribution contents and wire fixtures
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: "24"
+            - uses: actions/setup-python@v7
+              with:
+                  python-version: "3.12"
+            - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7
+            - run: corepack enable && yarn install --frozen-lockfile && yarn build
+            - run: uv sync --frozen --extra dev && uv run pytest && uv run python -m build
+              working-directory: python
+            - run: yarn check:distributions

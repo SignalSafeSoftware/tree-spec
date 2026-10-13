@@ -13,7 +13,7 @@ not installed in the runtime compatibility consumer. Use Node 24 for development
 Node 19 compatibility does not extend the upstream runtime's security support.
 
 
-This document describes how **unknown JSON fields** (keys not defined in the TreeSpec wire contract) are handled in `@signalsafe/tree-spec` (TypeScript) and how that compares to [`signalsafe-tree-spec`](https://github.com/SignalSafeSoftware/tree-spec-python) (Python / Pydantic).
+This document describes how **unknown JSON fields** (keys not defined in the TreeSpec wire contract) are handled in `@signalsafe/tree-spec` (TypeScript) and how that compares to [`signalsafe-tree-spec`](https://github.com/SignalSafeSoftware/tree-spec/tree/main/python) (Python / Pydantic).
 
 **Policy summary**
 
@@ -25,7 +25,7 @@ This document describes how **unknown JSON fields** (keys not defined in the Tre
 | **Lint** | Graph lints report structural issues with stable codes/paths and ignore unknown keys. |
 | **Round-trip through models** | Unknown keys are **not preserved** except in documented opaque buckets (see below). |
 
-Python parity details live in the mirrored doc in `tree-spec-python/docs/compatibility.md`.
+Python parity details live in the mirrored doc in `tree-spec/python/docs/compatibility.md`.
 
 ---
 

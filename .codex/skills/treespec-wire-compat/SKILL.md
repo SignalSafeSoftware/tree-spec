@@ -1,6 +1,6 @@
 ---
 name: treespec-wire-compat
-description: "Change TreeSpec parsing, lint rules, issue codes, issue paths or normalization without breaking the TypeScript and Python contracts or their consumers. Use for any edit to tree-spec, tree-spec-python, or a host's TreeSpec validation."
+description: "Change TreeSpec parsing, lint rules, issue codes, issue paths or normalization without breaking the TypeScript and Python contracts or their consumers. Use for any edit to the combined tree-spec repository, or a host's TreeSpec validation."
 metadata:
   short-description: "Keep TreeSpec JS and Python contracts in lockstep"
 ---

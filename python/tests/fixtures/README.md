@@ -31,7 +31,7 @@ fixtures.
 | `invalid-duplicate-transition.json` | Lint: `duplicate_transition_source` | Graph lint: `duplicate_transition_source` |
 
 Parity tests in `tree-spec/tests/parity-fixtures.test.ts` and
-`tree-spec-python/tests/test_parity_fixtures.py` encode the shared wire
+`tree-spec/python/tests/test_parity_fixtures.py` encode the shared wire
 expectations. Strict TypeScript decoding and Python model parsing retain their
 documented difference in unknown-field handling; graph diagnostics use the same
 canonical issue codes and map Python `level` to TypeScript `severity`.
