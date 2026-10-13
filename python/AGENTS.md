@@ -2,7 +2,7 @@
 
 ## Wire contract
 
-`signalsafe-tree-spec` is the Python half of the TreeSpec wire contract; `@signalsafe/tree-spec` (`..`) is the TypeScript half. Keep issue codes, issue `path` values, normalization (`options` -> `choices`, `__END__` -> `END`) and the cross-language `severity` naming identical. Add a fixture to `tests/fixtures` for every new rule and mirror it in the TypeScript package. Follow `../.codex/skills/treespec-wire-compat/SKILL.md`.
+`signalsafe-tree-spec` is the Python half of the TreeSpec wire contract; `@signalsafe/tree-spec` (`../typescript`) is the TypeScript half. Keep issue codes, issue `path` values, normalization (`options` -> `choices`, `__END__` -> `END`) and the cross-language `severity` naming identical. Add a fixture to `tests/fixtures` for every new rule and mirror it in the TypeScript package. Follow `../.codex/skills/treespec-wire-compat/SKILL.md`.
 
 - The distribution name is `signalsafe-tree-spec`; the import path is `deliveryplus_tree_spec` (flat layout, `package-dir` maps `.`). Do not rename either without a coordinated migration of every consumer.
 - Lint returns issues with `path`; hosts translate them to their own envelopes. Do not add host-specific codes or product rules here.

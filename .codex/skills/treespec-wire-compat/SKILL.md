@@ -12,9 +12,9 @@ metadata:
 ## Workflow
 
 1. Name the rule: parse shape, lint graph rule, normalization, or issue envelope. Decide whether it is generic (belongs in the packages) or product-specific (belongs in the host).
-2. Read `docs/compatibility.md` in `tree-spec` and the matching Python tests before editing. Note intentional differences (unknown fields, `level` vs `severity`).
-3. Change both packages, or record the intentional difference in `docs/compatibility.md` with a test that pins it.
-4. Add a fixture per rule: `tree-spec/tests/fixtures` and `tree-spec-python/tests/fixtures`, exercised by `parity-fixtures.test.ts` and `test_parity_fixtures.py`.
+2. Read `typescript/docs/compatibility.md` in `tree-spec` and the matching Python tests before editing. Note intentional differences (unknown fields, `level` vs `severity`).
+3. Change both packages, or record the intentional difference in `typescript/docs/compatibility.md` with a test that pins it.
+4. Add a fixture per rule: `tree-spec/typescript/tests/fixtures` and `tree-spec/python/tests/fixtures`, exercised by `parity-fixtures.test.ts` and `test_parity_fixtures.py`.
 5. Keep issue fields stable: `code`, `path` (starting `"tree_spec"`), `message`, `node_id`, `choice_id`, severity. New codes are additive; renaming or removing a code is a breaking change for every host.
 6. Check hosts that map codes: grep the host for each code string and extend its mapping and contracts in the same plan. Hosts that cannot upgrade yet must keep a documented shim, listed in the change's follow-up notes.
 7. Run each package's gates (`yarn typecheck && yarn lint && yarn test:coverage && yarn smoke:package`; `uv run pytest`). Coverage stays at 100%.

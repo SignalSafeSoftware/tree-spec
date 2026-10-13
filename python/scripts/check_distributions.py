@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def main() -> None:
-    typescript = {p.name: p.read_bytes() for p in (ROOT / "tests/fixtures").glob("*.json")}
+    typescript = {p.name: p.read_bytes() for p in (ROOT / "typescript/tests/fixtures").glob("*.json")}
     python = {p.name: p.read_bytes() for p in (ROOT / "python/tests/fixtures").glob("*.json")}
     if not typescript or typescript != python:
         raise ValueError("TreeSpec language fixtures have drifted")

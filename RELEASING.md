@@ -1,87 +1,50 @@
 # Combined repository releases
 
-Build npm from the repository root and Python from `python/`. Keep versions independent.
-Use `ts-v<package.json version>` for npm and `py-v<python/VERSION>` for PyPI.
-Publishing workflows retain all checks and publish only the matching language.
-Manual dispatch requires an explicit publish selection; a default dispatch runs checks only.
-PyPI trusted publishing must point to this repository's `python.yml` workflow and `pypi` environment before release.
-Nothing in this consolidation authorizes publishing, tagging or pushing.
+The private root npm workspace is tooling only. The public npm package
+`@signalsafe/tree-spec` is built and published from `typescript/`. The PyPI
+package `signalsafe-tree-spec` is built and published from `python/`.
+Versions remain independent; public package names and imports are unchanged.
 
----
+## Validation
 
-The historical instructions below predate consolidation; the language-specific tag,
-manual dispatch and PyPI configuration above supersede their old `v*`/standalone workflow details.
+Use Node 24 for development. The npm runtime supports Node >=19.0.0;
+CI checks packed runtime imports on Node 19–24, including exactly 19.0.0.
+From the repository root:
 
-# Releasing `@signalsafe/tree-spec`
-
-Standalone repository: [SignalSafeSoftware/tree-spec](https://github.com/SignalSafeSoftware/tree-spec).
-
-## Requirements
-
-- Use Node.js **24** for local development and publishing. The published package requires **>=19.0.0**; development tools require newer Node versions.
-- Before release, require the runtime compatibility matrix (Node 19–24 and the exact 19.0.0 minimum), unit tests, build checks, and package smoke tests to pass.
-
-## CI publish policy
-
-- **Checks and tests** run on every pull request.
-- **`scan` (Sonar)** on pull requests is **optional** — it runs only when the PR has the **`scan`** label. On **`push`** (including **`v*`** tag pushes) and **`workflow_dispatch`**, **`scan`** runs automatically.
-- **Publish does not run** from PR labels.
-- **Publish runs** when:
-  - **Manual:** GitHub Actions → **CI** → **Run workflow** on branch **`main`**, or
-  - **Tag:** push a semver tag matching `v*` (for example `vX.Y.Z`).
-- **Publish requires** successful **`checks`**, **`tests`**, and **`scan`** jobs in the same workflow run (see [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)).
-- Pushing a **`v*`** tag starts a workflow run where **`checks`**, **`tests`**, and **`scan`** run before **Publish** can proceed.
-- **GitHub Releases do not trigger publish** in the current workflow.
-- **No npm Environment approval or provenance** in CI today.
-
-## CI tooling and npm auth
-
-- Local development and CI use **Yarn** for `install`, `test`, `build`, and `smoke:package`.
-- CI **publish** uses **`npm publish`** (non-interactive; compatible with 2FA-enabled npm accounts when auth is configured correctly).
-- Set the GitHub Actions secret **`NPM_TOKEN`** to a publish-capable npm token unless **npm trusted publishing/OIDC** is configured for the repository.
-- If the npm account or package requires **2FA for publish**, the token must support non-interactive publishing — for example a granular access token with read/write package access and **2FA bypass enabled for write actions**, or npm trusted publishing/OIDC.
-- CI writes auth to `~/.npmrc` only; no `.npmrc` is committed to the repository.
-- CI does not run `npm version` or bump versions during publish; the committed `package.json` version is published as-is.
-
-## Before you release
-
-1. Bump `version` in `package.json`.
-2. Update [CHANGELOG.md](./CHANGELOG.md) (`[Unreleased]` → new version section when tagging).
-3. Run locally:
-
-   ```bash
-   yarn install --frozen-lockfile
-   yarn typecheck
-   yarn test
-   yarn build
-   npm publish --dry-run
-   ```
-
-4. Run artifact smoke test: `yarn smoke:package` (pack, temp consumer install, export/type checks — enforced in CI before publish).
-
-## Publish
-
-1. Commit the version and changelog updates on **`main`**:
-
-   ```bash
-   git add package.json CHANGELOG.md
-   git commit -m "Release vX.Y.Z"
-   git push origin main
-   ```
-
-2. Tag and push (recommended — triggers **Publish** when required jobs succeed):
-
-   ```bash
-   git tag vX.Y.Z
-   git push origin vX.Y.Z
-   ```
-
-   **Option B — Manual dispatch:** merge release commits to **`main`**, then GitHub → **Actions** → **CI** → **Run workflow** (branch **`main`**). Ensure `package.json` `version` matches the release you intend to ship.
-
-## After publish
-
-```bash
-npm view @signalsafe/tree-spec version
+```sh
+yarn install --frozen-lockfile
+yarn lint
+yarn typecheck
+yarn test:coverage
+yarn build
+yarn smoke:package
+yarn publish:dry-run
+(cd python && uv sync --frozen --extra dev && uv run pytest && uv run python -m build)
+yarn check:distributions
 ```
 
-CI runs `yarn smoke:package`, logs the package version, then publishes with `npm publish` using `NPM_TOKEN` auth.
+Python CI also runs lint, security checks and an isolated wheel smoke test.
+Both language fixtures and distribution boundaries must pass before release.
+
+## npm release
+
+Update `typescript/package.json` and `typescript/CHANGELOG.md`. The CI workflow
+publishes only after its checks, tests, scan, smoke, runtime compatibility and
+distribution jobs succeed. Same-repository PRs run the Sonar scan; fork PRs skip
+it. Configure `NPM_TOKEN` for non-interactive publishing; CI keeps auth in the
+runner's npm configuration, never in this repository.
+
+An explicitly requested release can use `ts-v<typescript/package.json version>`
+or manual CI dispatch on `main` with `publish` enabled. Manual dispatch defaults
+to checks only. The publish step runs `npm publish --access public --ignore-scripts`
+inside `typescript/`, after building and checking the package.
+
+## Python release
+
+Update `python/VERSION` and `python/CHANGELOG.md`. The Python workflow publishes
+only for `py-v<python/VERSION>` or manual dispatch on `main` with `publish` enabled,
+after all required jobs pass. Configure PyPI trusted publishing for this
+repository's `python.yml` workflow and `pypi` environment. Only `python/dist/`
+is uploaded to PyPI.
+
+Repository consolidation does not authorize a release, tag, push or publication.

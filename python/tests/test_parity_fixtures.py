@@ -1,4 +1,4 @@
-"""Mirrored TreeSpec contract fixtures — keep aligned with tree-spec/tests/fixtures/."""
+"""Mirrored TreeSpec contract fixtures — keep aligned with tree-spec/typescript/tests/fixtures/."""
 
 from __future__ import annotations
 

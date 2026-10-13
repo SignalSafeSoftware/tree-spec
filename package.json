@@ -1,79 +1,20 @@
 {
-    "name": "@signalsafe/tree-spec",
-    "version": "0.4.3",
-    "type": "module",
-    "description": "TypeScript types, graph helpers, compiler utilities, and linting for the TreeSpec decision-tree format.",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/SignalSafeSoftware/tree-spec.git"
-    },
-    "bugs": {
-        "url": "https://github.com/SignalSafeSoftware/tree-spec/issues"
-    },
-    "homepage": "https://github.com/SignalSafeSoftware/tree-spec#readme",
-    "keywords": [
-        "tree-spec",
-        "decision-tree",
-        "scenario",
-        "training",
-        "phishing",
-        "security-awareness",
-        "typescript",
-        "schema",
-        "wire-format",
-        "graph",
-        "lint",
-        "compiler",
-        "signalsafe"
-    ],
-    "sideEffects": false,
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
-        }
-    },
-    "files": [
-        "dist",
-        "README.md",
-        "LICENSE",
-        "docs"
-    ],
-    "engines": {
-        "node": ">=19.0.0"
-    },
+    "name": "tree-spec-workspace",
+    "private": true,
+    "version": "0.0.0",
     "packageManager": "yarn@1.22.22",
-    "publishConfig": {
-        "access": "public"
-    },
+    "workspaces": [
+        "typescript"
+    ],
     "scripts": {
-        "build": "tsc -p tsconfig.build.json",
-        "lint": "yarn typecheck",
-        "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.examples.json",
-        "typecheck:examples": "tsc --noEmit -p tsconfig.examples.json",
-        "pack:local": "npm pack --pack-destination ../../dist/reusable-npm",
-        "release:check": "node ../../scripts/run-private-package-release-checks.mjs --mode prepublish",
-        "release:verify": "node ../../scripts/run-private-package-release-checks.mjs --mode postpublish",
-        "publish:preflight": "node ../../scripts/check-private-registry-preflight.mjs --scope @signalsafe",
-        "publish:dry-run": "npm publish --dry-run",
-        "publish:verify": "node ../../scripts/check-private-package-postpublish.mjs --scope @signalsafe --package @signalsafe/tree-spec --version $npm_package_version",
-        "pack:check": "node ../../scripts/check-package-tarball.mjs --tgz \"../../dist/reusable-npm/signalsafe-tree-spec-$npm_package_version.tgz\" --expect package/dist/index.js --expect package/package.json --expect package/README.md",
-        "smoke:package": "node scripts/smoke-package.mjs",
-        "smoke:external": "node ../../scripts/smoke-tree-spec-external-consumer.mjs",
-        "smoke:published": "node ../../scripts/smoke-tree-spec-external-consumer.mjs --source registry",
-        "prepublishOnly": "npm run build",
-        "prepare": "npm run build",
-        "test": "vitest run",
-        "test:coverage": "yarn test --coverage",
+        "build": "yarn --cwd typescript build",
+        "lint": "yarn --cwd typescript lint",
+        "typecheck": "yarn --cwd typescript typecheck",
+        "typecheck:examples": "yarn --cwd typescript typecheck:examples",
+        "test": "yarn --cwd typescript test",
+        "test:coverage": "yarn --cwd typescript test:coverage",
+        "smoke:package": "yarn --cwd typescript smoke:package",
+        "publish:dry-run": "yarn --cwd typescript publish:dry-run",
         "check:distributions": "node scripts/check-distributions.mjs"
-    },
-    "devDependencies": {
-        "typescript": "^7.0.2",
-        "@vitest/coverage-v8": "^3.2.4",
-        "vitest": "^3.2.4"
     }
 }

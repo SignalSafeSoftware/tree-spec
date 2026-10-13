@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const temporary = mkdtempSync(join(tmpdir(), 'tree-spec-distributions-'));
 try {
-    const output = execFileSync('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', temporary], { cwd: root, encoding: 'utf8' });
+    const output = execFileSync('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', temporary], { cwd: join(root, 'typescript'), encoding: 'utf8' });
     const [packed] = JSON.parse(output);
     const result = spawnSync(`${root}python/.venv/bin/python`, ['python/scripts/check_distributions.py', join(temporary, packed.filename)], { cwd: root, stdio: 'inherit' });
     if (result.error) throw result.error;

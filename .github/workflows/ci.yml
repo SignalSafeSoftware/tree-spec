@@ -77,7 +77,7 @@ jobs:
               uses: actions/upload-artifact@v7
               with:
                   name: coverage
-                  path: coverage/lcov.info
+                  path: typescript/coverage/lcov.info
 
     scan:
         name: SonarCloud scan
@@ -110,11 +110,13 @@ jobs:
 
             - name: Verify coverage report
               run: |
-                  test -f coverage/lcov.info
-                  grep '^SF:src/' coverage/lcov.info
+                  test -f typescript/coverage/lcov.info
+                  grep '^SF:src/' typescript/coverage/lcov.info
 
             - name: SonarCloud scan
               uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+              with:
+                  projectBaseDir: typescript
               env:
                   SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
 
@@ -173,14 +175,14 @@ jobs:
                   yarn install --frozen-lockfile
                   yarn build
                   mkdir -p "$RUNNER_TEMP/tree-spec-package"
-                  npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/tree-spec-package"
+                  npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/tree-spec-package" --workspace @signalsafe/tree-spec
             - uses: actions/setup-node@v7
               with:
                   node-version: ${{ matrix.node-version }}
             - name: Install and test as an external consumer
               run: |
                   mkdir -p "$RUNNER_TEMP/tree-spec-consumer"
-                  cp tests/runtime-compatibility.mjs "$RUNNER_TEMP/tree-spec-consumer/"
+                  cp typescript/tests/runtime-compatibility.mjs "$RUNNER_TEMP/tree-spec-consumer/"
                   cd "$RUNNER_TEMP/tree-spec-consumer"
                   npm init -y
                   npm install --engine-strict --ignore-scripts --no-audit --no-fund "$RUNNER_TEMP"/tree-spec-package/*.tgz
@@ -215,7 +217,7 @@ jobs:
               run: yarn smoke:package
 
             - name: Check package version
-              run: node -e "const p=require('./package.json'); console.log(p.name, p.version)"
+              run: node -e "const p=require('./typescript/package.json'); console.log(p.name, p.version)"
 
             - name: Configure npm auth
               run: |
@@ -226,6 +228,7 @@ jobs:
 
             - name: Publish to npm
               run: npm publish --access public --ignore-scripts
+              working-directory: typescript
               env:
                 NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
