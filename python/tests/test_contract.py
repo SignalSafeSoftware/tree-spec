@@ -1,16 +1,16 @@
-"""Focused tests for the standalone `deliveryplus_tree_spec` package (contract + lint)."""
+"""Focused tests for the standalone `tree_spec` package (contract + lint)."""
 
 from __future__ import annotations
 
 import pytest
 
-from deliveryplus_tree_spec import END_NODE_ID
-from deliveryplus_tree_spec import PatchApplyError
-from deliveryplus_tree_spec import TreeSpec
-from deliveryplus_tree_spec import TreeSpecBuilder
-from deliveryplus_tree_spec import apply_patch_to_spec_dict
-from deliveryplus_tree_spec import lint_tree_spec
-from deliveryplus_tree_spec.models import ABMeta
+from tree_spec import END_NODE_ID
+from tree_spec import PatchApplyError
+from tree_spec import TreeSpec
+from tree_spec import TreeSpecBuilder
+from tree_spec import apply_patch_to_spec_dict
+from tree_spec import lint_tree_spec
+from tree_spec.models import ABMeta
 
 
 def test_parse_minimal_tree_spec() -> None:

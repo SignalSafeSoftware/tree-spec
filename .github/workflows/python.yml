@@ -53,11 +53,14 @@ jobs:
 
             - name: Ruff
               if: matrix.python-version == '3.12'
-              run: .venv/bin/ruff check __init__.py builder.py constants.py lint.py models.py patch.py tests scripts
+              run: .venv/bin/ruff check src tests scripts
+
+            - name: Python strict types
+              run: .venv/bin/mypy src/tree_spec
 
             - name: Bandit
               if: matrix.python-version == '3.12'
-              run: .venv/bin/bandit -r . -q -x ./tests,./.venv
+              run: .venv/bin/bandit -r src scripts -q
 
     tests:
         name: Tests (Python ${{ matrix.python-version }})
@@ -200,9 +203,9 @@ jobs:
                   python - <<'PYCODE'
                   import os
                   from pathlib import Path
-                  version = Path('VERSION').read_text().strip()
+                  version = Path('src/tree_spec/VERSION').read_text().strip()
                   if os.environ['GITHUB_REF_NAME'] != f'py-v{version}':
-                      raise SystemExit('Python release tag must match python/VERSION')
+                      raise SystemExit('Python release tag must match python/src/tree_spec/VERSION')
                   PYCODE
 
             - name: Build distributions

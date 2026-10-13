@@ -1,3 +1,4 @@
+import { parseGraphPosition } from "./graphPosition.js";
 import { isRecord } from "./guards.js";
 
 /** Namespace for graph-editor-only keys inside `render_hints`. */
@@ -15,19 +16,7 @@ export function readGraphPosition(
     if (!hints || !isRecord(hints)) return undefined;
     const editor = hints[RENDER_HINTS_EDITOR_NS];
     if (!isRecord(editor)) return undefined;
-    const gp = editor[GRAPH_POSITION_KEY];
-    if (!isRecord(gp)) return undefined;
-    const x = gp.x;
-    const y = gp.y;
-    if (
-        typeof x !== "number" ||
-        typeof y !== "number" ||
-        !Number.isFinite(x) ||
-        !Number.isFinite(y)
-    ) {
-        return undefined;
-    }
-    return { x, y };
+    return parseGraphPosition(editor[GRAPH_POSITION_KEY]);
 }
 
 /** Merge canvas position into `render_hints.editor` without clobbering other keys. */

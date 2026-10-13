@@ -7,7 +7,7 @@ metadata:
 
 # TreeSpec wire compatibility
 
-`@signalsafe/tree-spec` (TypeScript) and `signalsafe-tree-spec` (Python, import `deliveryplus_tree_spec`) implement one wire contract. Hosts translate their issues into product envelopes (for example Adventure Stories' `ApiStoryValidationIssueCode`), so codes and paths are public API.
+`@signalsafe/tree-spec` (TypeScript) and `signalsafe-tree-spec` (Python, import `tree_spec`) implement one wire contract. Hosts translate their issues into product envelopes (for example Adventure Stories' `ApiStoryValidationIssueCode`), so codes and paths are public API.
 
 ## Workflow
 

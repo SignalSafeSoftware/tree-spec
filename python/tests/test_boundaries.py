@@ -1,11 +1,11 @@
-"""Guardrails: `deliveryplus_tree_spec` must stay free of app-layer framework imports."""
+"""Guardrails: `tree_spec` must stay free of app-layer framework imports."""
 
 from __future__ import annotations
 
 import ast
 from pathlib import Path
 
-_PKG = Path(__file__).resolve().parent.parent
+_PKG = Path(__file__).resolve().parent.parent / "src" / "tree_spec"
 
 _ORM_FRAMEWORK_ROOT = "dj" + "ango"
 
@@ -35,10 +35,10 @@ def _violations_in_file(path: Path) -> list[str]:
     return bad
 
 
-def test_deliveryplus_tree_spec_has_no_framework_or_app_imports() -> None:
+def test_tree_spec_has_no_framework_or_app_imports() -> None:
     assert _PKG.is_dir(), f"missing package: {_PKG}"
-    for path in sorted(_PKG.glob("*.py")):
-        if path.name == "__pycache__":
-            continue
+    files = sorted(_PKG.rglob("*.py"))
+    assert files, f"no Python source found in {_PKG}"
+    for path in files:
         violations = _violations_in_file(path)
         assert not violations, f"{path.name}: forbidden imports {violations}"

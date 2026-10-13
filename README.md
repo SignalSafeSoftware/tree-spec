@@ -5,7 +5,7 @@ One repository owns the TreeSpec wire contract in two independently published di
 | Folder | Distribution | Public import |
 | --- | --- | --- |
 | `typescript/` | npm `@signalsafe/tree-spec` | `@signalsafe/tree-spec` |
-| `python/` | PyPI `signalsafe-tree-spec` | `deliveryplus_tree_spec` |
+| `python/` | PyPI `signalsafe-tree-spec` | `tree_spec` |
 
 The root npm package is private and provides workspace commands. npm publishes from
 `typescript/`; PyPI publishes from `python/`. Neither archive contains the other language.
@@ -30,7 +30,11 @@ explicit authorization and passing the corresponding workflow and shared boundar
 `typescript/coverage/` contains TypeScript coverage reports.
 `python/dist/` contains the wheel (`.whl`) and source archive (`.tar.gz`)
 produced by `uv run python -m build` for upload to PyPI.
+Python runtime sources live in `python/src/tree_spec/`.
 Python caches, build metadata and its virtual environment stay inside `python/`.
 All generated output is ignored by Git. Root `node_modules/` and `yarn.lock`
 are shared Yarn workspace dependencies and remain at the repository root.
 Root `docs/` and `scripts/` own cross-language documentation and checks.
+
+Python 0.4 uses the generic `tree_spec` import namespace. Upgrade all Python
+consumers together; the retired product-specific namespace is not provided.

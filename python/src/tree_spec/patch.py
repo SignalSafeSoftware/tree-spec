@@ -4,8 +4,8 @@ from __future__ import annotations
 from typing import Any
 from typing import Callable
 from pydantic import ValidationError as PydanticValidationError
-from deliveryplus_tree_spec.models import PatchDict
-from deliveryplus_tree_spec.models import TreeSpec
+from tree_spec.models import PatchDict
+from tree_spec.models import TreeSpec
 
 _PATCH_APPLY_ERRORS = (ValueError, TypeError, KeyError, PydanticValidationError)
 

@@ -5,10 +5,10 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from deliveryplus_tree_spec import END_NODE_ID
-from deliveryplus_tree_spec import LEGACY_END_NODE_ID
-from deliveryplus_tree_spec.models import Node
-from deliveryplus_tree_spec.models import TreeSpec
+from tree_spec import END_NODE_ID
+from tree_spec import LEGACY_END_NODE_ID
+from tree_spec.models import Node
+from tree_spec.models import TreeSpec
 
 
 def test_parse_ignores_unknown_root_key() -> None:

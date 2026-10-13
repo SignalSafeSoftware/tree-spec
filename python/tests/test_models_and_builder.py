@@ -5,21 +5,21 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from deliveryplus_tree_spec import END_NODE_ID
-from deliveryplus_tree_spec import TREESPEC_WIRE_VERSION
-from deliveryplus_tree_spec import TreeSpec
-from deliveryplus_tree_spec import TreeSpecBuilder
-from deliveryplus_tree_spec import TreeSpecError
-from deliveryplus_tree_spec.builder import TreeSpecBuilder as BuilderClass
-from deliveryplus_tree_spec.models import ABMeta
-from deliveryplus_tree_spec.models import Delta
-from deliveryplus_tree_spec.models import MicroFeedback
-from deliveryplus_tree_spec.models import Node
-from deliveryplus_tree_spec.models import PatchDict
-from deliveryplus_tree_spec.models import ReplaceMatch
-from deliveryplus_tree_spec.models import ReplacePatch
-from deliveryplus_tree_spec.models import ReplaceSet
-from deliveryplus_tree_spec.models import Transition
+from tree_spec import END_NODE_ID
+from tree_spec import TREESPEC_WIRE_VERSION
+from tree_spec import TreeSpec
+from tree_spec import TreeSpecBuilder
+from tree_spec import TreeSpecError
+from tree_spec.builder import TreeSpecBuilder as BuilderClass
+from tree_spec.models import ABMeta
+from tree_spec.models import Delta
+from tree_spec.models import MicroFeedback
+from tree_spec.models import Node
+from tree_spec.models import PatchDict
+from tree_spec.models import ReplaceMatch
+from tree_spec.models import ReplacePatch
+from tree_spec.models import ReplaceSet
+from tree_spec.models import Transition
 
 
 def _minimal_raw() -> dict[str, object]:

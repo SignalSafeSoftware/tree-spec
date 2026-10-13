@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from deliveryplus_tree_spec import END_NODE_ID
-from deliveryplus_tree_spec import TreeSpecBuilder
-from deliveryplus_tree_spec import lint_tree_spec
+from tree_spec import END_NODE_ID
+from tree_spec import TreeSpecBuilder
+from tree_spec import lint_tree_spec
 
 
 def test_lint_reports_duplicate_transition() -> None:

@@ -41,8 +41,8 @@ inside `typescript/`, after building and checking the package.
 
 ## Python release
 
-Update `python/VERSION` and `python/CHANGELOG.md`. The Python workflow publishes
-only for `py-v<python/VERSION>` or manual CI dispatch on `main` with `publish_pypi` enabled,
+Update `python/src/tree_spec/VERSION` and `python/CHANGELOG.md`. The Python workflow publishes
+only for `py-v<python/src/tree_spec/VERSION>` or manual CI dispatch on `main` with `publish_pypi` enabled,
 after all required jobs pass. Configure a package-scoped `PYPI_API_TOKEN` secret
 in the repository or `pypi` environment. Only `python/dist/` is uploaded to PyPI.
 

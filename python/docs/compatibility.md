@@ -23,7 +23,7 @@ value through the read-only `severity` property.
 
 ---
 
-## Python models (`deliveryplus_tree_spec.models`)
+## Python models (`tree_spec.models`)
 
 All wire models (`TreeSpec`, `Node`, `Choice`, `Transition`, `MicroFeedback`, …) set **`extra="ignore"`**.
 

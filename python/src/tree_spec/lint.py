@@ -2,8 +2,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List
 from typing import Optional
-from deliveryplus_tree_spec.builder import TreeSpecBuilder
-from deliveryplus_tree_spec.constants import END_NODE_ID
+from tree_spec.builder import TreeSpecBuilder
+from tree_spec.constants import END_NODE_ID
 
 
 @dataclass(frozen=True)

@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Fix iterative JSON validation, prototype-like node round-trips and preservation of unknown graph-editor metadata; add parity regressions.
+- Share coordinate validation and enforce TypeScript coverage thresholds and Python strict type checks in CI.
+
+- Audit and correct source, fixture, documentation, packaging and release path references for the combined layout.
+
+- Breaking Python namespace migration: use `tree_spec` instead of the former product-specific import. Python candidate is 0.4.0; no compatibility alias is shipped.
+
+- Move runtime code, typing marker and version file into `src/tree_spec/`; update packaging, architecture checks and CI while preserving public imports.
+
 - Upgrade vulnerable dependency locks and coordinated test tooling; integrate current Dependabot action updates without changing TreeSpec wire behavior.
 
 - Replace Flake8 with Ruff for Python linting, preserving E/F/W checks and the 120-character line limit.

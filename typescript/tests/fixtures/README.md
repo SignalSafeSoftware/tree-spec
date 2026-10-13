@@ -8,6 +8,7 @@ fixtures.
 
 | File | Purpose |
 |------|---------|
+| `valid-prototype-node.json` | Prototype-like node ID stays a normal own node in both languages |
 | `minimal-valid.json` | Start node, one choice, transition to END with outcome |
 | `moderate-valid.json` | Multi-step path with transition feedback (round-trips through compile/decompile) |
 | `valid-implicit-wire-version.json` | Omits `wire_version` (implicit v1) |

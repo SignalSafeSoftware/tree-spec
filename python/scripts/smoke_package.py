@@ -16,17 +16,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 IMPORT_MODULES = [
-    "deliveryplus_tree_spec",
+    "tree_spec",
 ]
 
 NAMED_IMPORTS: list[tuple[str, list[str]]] = [
     (
-        "deliveryplus_tree_spec",
+        "tree_spec",
         ["TreeSpec", "lint_tree_spec", "TREESPEC_WIRE_VERSION", "TreeSpecBuilder"],
     ),
 ]
 
-TYPED_PACKAGE = "deliveryplus_tree_spec"
+TYPED_PACKAGE = "tree_spec"
 
 
 def run(cmd: list[str], *, cwd: Path | None = None) -> None:

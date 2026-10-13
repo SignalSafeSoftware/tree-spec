@@ -13,9 +13,9 @@ from pydantic import ConfigDict
 from pydantic import Field
 from pydantic import field_validator
 from pydantic import model_validator
-from deliveryplus_tree_spec.constants import END_NODE_ID
-from deliveryplus_tree_spec.constants import LEGACY_END_NODE_ID
-from deliveryplus_tree_spec.constants import TREESPEC_WIRE_VERSION
+from tree_spec.constants import END_NODE_ID
+from tree_spec.constants import LEGACY_END_NODE_ID
+from tree_spec.constants import TREESPEC_WIRE_VERSION
 
 # JSON-shaped values for API helpers (avoid coupling to app-wide JSON types).
 JSONValue = Any

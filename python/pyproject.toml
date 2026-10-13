@@ -32,34 +32,35 @@ dev = [
     "build>=1.2",
     "twine>=6.1",
     "ruff>=0.17,<1",
+    "mypy>=1.17,<2",
     "bandit>=1.7",
 ]
 
 [project.urls]
 Homepage = "https://github.com/SignalSafeSoftware/tree-spec"
 Repository = "https://github.com/SignalSafeSoftware/tree-spec"
-Documentation = "https://github.com/SignalSafeSoftware/tree-spec#readme"
+Documentation = "https://github.com/SignalSafeSoftware/tree-spec/blob/main/python/README.md"
 Issues = "https://github.com/SignalSafeSoftware/tree-spec/issues"
 
 [tool.setuptools]
-packages = ["deliveryplus_tree_spec"]
+packages = ["tree_spec"]
 include-package-data = true
 
 [tool.setuptools.package-dir]
-deliveryplus_tree_spec = "."
+"" = "src"
 
 [tool.setuptools.dynamic]
-version = { file = ["VERSION"] }
+version = { file = ["src/tree_spec/VERSION"] }
 
 [tool.setuptools.package-data]
-deliveryplus_tree_spec = ["py.typed", "VERSION"]
+tree_spec = ["py.typed", "VERSION"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=deliveryplus_tree_spec --cov-report=term-missing --cov-fail-under=100"
+addopts = "--cov=tree_spec --cov-report=term-missing --cov-fail-under=100"
 
 [tool.coverage.run]
-source = ["deliveryplus_tree_spec"]
+source = ["tree_spec"]
 omit = ["scripts/*"]
 branch = false
 
@@ -79,3 +80,7 @@ line-length = 120
 preview = true
 select = ["E", "F", "W"]
 ignore = ["E203"]
+
+[tool.mypy]
+strict = true
+files = ["src/tree_spec"]

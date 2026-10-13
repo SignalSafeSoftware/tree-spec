@@ -5,11 +5,11 @@ from typing import Any
 from typing import Dict
 from typing import Optional
 from pydantic import ValidationError as PydanticValidationError
-from deliveryplus_tree_spec.models import ABMeta
-from deliveryplus_tree_spec.models import MicroFeedback
-from deliveryplus_tree_spec.models import Node
-from deliveryplus_tree_spec.models import Transition
-from deliveryplus_tree_spec.models import TreeSpec
+from tree_spec.models import ABMeta
+from tree_spec.models import MicroFeedback
+from tree_spec.models import Node
+from tree_spec.models import Transition
+from tree_spec.models import TreeSpec
 
 _TREE_SPEC_PARSE_ERRORS = (ValueError, TypeError, KeyError, PydanticValidationError)
 

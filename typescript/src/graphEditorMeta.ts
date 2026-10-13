@@ -1,3 +1,4 @@
+import { parseGraphPosition } from "./graphPosition.js";
 import { isRecord } from "./guards.js";
 import type { GraphPosition } from "./renderHintsEditor.js";
 
@@ -19,38 +20,12 @@ export type GraphEditorMeta = {
     default_edge_type?: GraphEditorEdgeType;
 };
 
-function parseGraphPosition(value: unknown): GraphPosition | undefined {
-    if (!isRecord(value)) return undefined;
-    const x = value.x;
-    const y = value.y;
-    if (
-        typeof x !== "number" ||
-        typeof y !== "number" ||
-        !Number.isFinite(x) ||
-        !Number.isFinite(y)
-    ) {
-        return undefined;
-    }
-    return { x, y };
-}
-
 function parseViewport(value: unknown): GraphEditorViewport | undefined {
     if (!isRecord(value)) return undefined;
-    const x = value.x;
-    const y = value.y;
+    const position = parseGraphPosition(value);
     const zoom = value.zoom;
-    if (
-        typeof x !== "number" ||
-        typeof y !== "number" ||
-        typeof zoom !== "number" ||
-        !Number.isFinite(x) ||
-        !Number.isFinite(y) ||
-        !Number.isFinite(zoom) ||
-        zoom <= 0
-    ) {
-        return undefined;
-    }
-    return { x, y, zoom };
+    if (position === undefined || typeof zoom !== "number" || !Number.isFinite(zoom) || zoom <= 0) return undefined;
+    return { ...position, zoom };
 }
 
 function parseEdgeType(value: unknown): GraphEditorEdgeType | undefined {
@@ -67,16 +42,13 @@ export function readGraphEditorMeta(
     if (!meta || !isRecord(meta)) return {};
     const bucket = meta[GRAPH_EDITOR_META_NS];
     if (!isRecord(bucket)) return {};
+    const endPosition = parseGraphPosition(bucket.end_position);
+    const viewport = parseViewport(bucket.viewport);
+    const edgeType = parseEdgeType(bucket.default_edge_type);
     return {
-        ...(parseGraphPosition(bucket.end_position)
-            ? { end_position: parseGraphPosition(bucket.end_position) }
-            : {}),
-        ...(parseViewport(bucket.viewport)
-            ? { viewport: parseViewport(bucket.viewport) }
-            : {}),
-        ...(parseEdgeType(bucket.default_edge_type)
-            ? { default_edge_type: parseEdgeType(bucket.default_edge_type) }
-            : {}),
+        ...(endPosition === undefined ? {} : { end_position: endPosition }),
+        ...(viewport === undefined ? {} : { viewport }),
+        ...(edgeType === undefined ? {} : { default_edge_type: edgeType }),
     };
 }
 
@@ -89,7 +61,11 @@ export function writeGraphEditorMeta(
     const current = readGraphEditorMeta(next);
     const merged: GraphEditorMeta = { ...current, ...patch };
 
-    const bucket: Record<string, unknown> = {};
+    const existing = next[GRAPH_EDITOR_META_NS];
+    const bucket: Record<string, unknown> = isRecord(existing) ? { ...existing } : {};
+    delete bucket.end_position;
+    delete bucket.viewport;
+    delete bucket.default_edge_type;
     if (merged.end_position) {
         bucket.end_position = merged.end_position;
     }

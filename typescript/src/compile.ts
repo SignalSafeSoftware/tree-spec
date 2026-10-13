@@ -28,7 +28,7 @@ function pickTransitionOptionalFields(
 
 /** Deserialize wire JSON into an authoring graph (assigns fresh transition ids). */
 export function decompileTreeSpec(raw: TreeSpecWire): TreeGraph {
-    const nodes: TreeGraph["nodes"] = {};
+    const nodeEntries: [string, TreeGraph["nodes"][string]][] = [];
     for (const [id, n] of Object.entries(raw.nodes || {})) {
         const rawChoices = (n.choices?.length ? n.choices : n.options) || [];
         const choices = rawChoices.map((c) => {
@@ -43,15 +43,16 @@ export function decompileTreeSpec(raw: TreeSpecWire): TreeGraph {
         });
         const render_hints = isRecord(n.render_hints) ? n.render_hints : {};
         const position = readGraphPosition(render_hints);
-        nodes[id] = {
+        nodeEntries.push([id, {
             id,
             type: String(n.type ?? "prompt"),
             prompt: String(n.prompt ?? ""),
             render_hints,
             choices,
             ...(position ? { position } : {}),
-        };
+        }]);
     }
+    const nodes = Object.fromEntries(nodeEntries);
     const transitions: TreeGraph["transitions"] = (raw.transitions || []).map(
         (t) => {
             const tt = t as TreeSpecTransitionWire;
@@ -81,20 +82,21 @@ export function decompileTreeSpec(raw: TreeSpecWire): TreeGraph {
 
 /** Serialize an authoring graph to wire JSON. */
 export function compileTreeSpec(tree: TreeGraph): TreeSpecWire {
-    const nodes: TreeSpecWire["nodes"] = {};
+    const nodeEntries: [string, TreeSpecWire["nodes"][string]][] = [];
     for (const [id, n] of Object.entries(tree.nodes)) {
         const baseHints = isRecord(n.render_hints) ? n.render_hints : {};
         const render_hints =
             n.position === undefined
                 ? baseHints
                 : writeGraphPosition(baseHints, n.position);
-        nodes[id] = {
+        nodeEntries.push([id, {
             type: n.type,
             prompt: n.prompt,
             render_hints,
             choices: n.choices,
-        };
+        }]);
     }
+    const nodes = Object.fromEntries(nodeEntries);
     const transitions: TreeSpecWire["transitions"] = tree.transitions
         .filter((t) => t.fromNodeId && t.fromChoiceId && t.toNodeId)
         .map((t) => {

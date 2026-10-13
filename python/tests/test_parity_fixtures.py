@@ -9,11 +9,11 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from deliveryplus_tree_spec import END_NODE_ID
-from deliveryplus_tree_spec import TreeSpec
-from deliveryplus_tree_spec import TreeSpecBuilder
-from deliveryplus_tree_spec import lint_tree_spec
-from deliveryplus_tree_spec.constants import TREESPEC_WIRE_VERSION
+from tree_spec import END_NODE_ID
+from tree_spec import TreeSpec
+from tree_spec import TreeSpecBuilder
+from tree_spec import lint_tree_spec
+from tree_spec.constants import TREESPEC_WIRE_VERSION
 
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 
@@ -121,3 +121,10 @@ def test_lint_duplicate_transition_code() -> None:
     issues = lint_tree_spec(TreeSpecBuilder.from_raw(raw))
     codes = [issue.code for issue in issues]
     assert "duplicate_transition_source" in codes
+
+
+def test_prototype_like_node_id_is_an_ordinary_node() -> None:
+    raw = load_fixture("valid-prototype-node.json")
+    builder = TreeSpecBuilder.from_raw(raw)
+    assert list(builder.spec.nodes) == ["__proto__"]
+    assert lint_tree_spec(builder) == []

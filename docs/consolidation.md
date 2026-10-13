@@ -3,10 +3,10 @@
 TypeScript source, tests, examples and its public npm manifest live in `typescript/`;
 Python source and its contract tests/tooling live in `python/`. The root is a private npm workspace. Both are owned by this repository.
 Registry names and public imports remain `@signalsafe/tree-spec`, `signalsafe-tree-spec`
-and `deliveryplus_tree_spec`. Packaging patch candidates are npm 0.4.3 and Python 0.3.1.
+and `tree_spec`. Candidates are npm 0.4.3 and Python 0.4.0. Python 0.4 intentionally changes the import namespace to `tree_spec`.
 Wire parsing, lint codes, normalization, extension preservation and runtime support are unchanged.
 
-11 mirrored fixtures are byte-identical and each language exercises them. The new
+12 mirrored fixtures are byte-identical and each language exercises them. The new
 `yarn check:distributions` gate verifies fixture parity and both distribution contents.
 TypeScript/Python quality gates, isolated installs and wheel/sdist builds pass locally.
 The new root Python workflow and both release branches must also pass on GitHub before release.

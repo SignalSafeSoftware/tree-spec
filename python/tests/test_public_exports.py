@@ -1,10 +1,10 @@
-"""Public export contract for deliveryplus_tree_spec."""
+"""Public export contract for tree_spec."""
 
 from __future__ import annotations
 
 import importlib
 
-import deliveryplus_tree_spec as pkg
+import tree_spec as pkg
 
 
 def test_public_all_symbols_are_importable() -> None:
@@ -15,7 +15,7 @@ def test_public_all_symbols_are_importable() -> None:
 
 
 def test_public_all_matches_package_module() -> None:
-    module = importlib.import_module("deliveryplus_tree_spec")
+    module = importlib.import_module("tree_spec")
     assert set(module.__all__) == {
         "ABMeta",
         "ABVariant",
@@ -43,8 +43,8 @@ def test_public_all_matches_package_module() -> None:
 
 
 def test_builder_reports_start_node_id() -> None:
-    from deliveryplus_tree_spec import END_NODE_ID
-    from deliveryplus_tree_spec import TreeSpecBuilder
+    from tree_spec import END_NODE_ID
+    from tree_spec import TreeSpecBuilder
 
     raw = {
         "start_node": "entry",
@@ -62,7 +62,7 @@ def test_builder_reports_start_node_id() -> None:
 
 
 def test_micro_feedback_merge_into_dict_partial_and_overwrite() -> None:
-    from deliveryplus_tree_spec import MicroFeedback
+    from tree_spec import MicroFeedback
 
     target = {"title": "old", "body": "keep"}
     MicroFeedback(key="new-key", takeaway="tip").merge_into_dict(target)
@@ -70,8 +70,8 @@ def test_micro_feedback_merge_into_dict_partial_and_overwrite() -> None:
 
 
 def test_apply_patch_matches_lessons_triggered_feedback_key() -> None:
-    from deliveryplus_tree_spec import END_NODE_ID
-    from deliveryplus_tree_spec import apply_patch_to_spec_dict
+    from tree_spec import END_NODE_ID
+    from tree_spec import apply_patch_to_spec_dict
 
     base_spec = {
         "start_node": "s",
@@ -109,9 +109,9 @@ def test_apply_patch_matches_lessons_triggered_feedback_key() -> None:
 
 
 def test_ab_variant_round_trip_through_tree_spec() -> None:
-    from deliveryplus_tree_spec import ABMeta
-    from deliveryplus_tree_spec import ABVariant
-    from deliveryplus_tree_spec import TreeSpec
+    from tree_spec import ABMeta
+    from tree_spec import ABVariant
+    from tree_spec import TreeSpec
 
     spec = TreeSpec(
         start_node="s",

@@ -5,7 +5,7 @@ Python implementation of the **TreeSpec wire contract**: Pydantic models, parsin
 | | |
 |---|---|
 | **PyPI distribution name** | `signalsafe-tree-spec` |
-| **Import path** | `deliveryplus_tree_spec` (stable; historical name) |
+| **Import path** | `tree_spec` |
 | **GitHub** | [SignalSafeSoftware/tree-spec](https://github.com/SignalSafeSoftware/tree-spec/tree/main/python) |
 | **Python** | 3.12+ (`requires-python >=3.12,<4.0`) |
 | **Runtime dependency** | Pydantic v2 (`pydantic>=2.11.3,<3`) |
@@ -51,16 +51,16 @@ pip install signalsafe-tree-spec
 ```
 
 ```python
-import deliveryplus_tree_spec
-from deliveryplus_tree_spec import TreeSpec, lint_tree_spec, TreeSpecBuilder
+import tree_spec
+from tree_spec import TreeSpec, lint_tree_spec, TreeSpecBuilder
 ```
 
-The PyPI name (`signalsafe-tree-spec`) differs from the import path (`deliveryplus_tree_spec`) for backward compatibility with existing backends.
+Install the PyPI distribution `signalsafe-tree-spec`; import its generic `tree_spec` package.
 
 ## Quick start
 
 ```python
-from deliveryplus_tree_spec import (
+from tree_spec import (
     END_NODE_ID,
     TREESPEC_WIRE_VERSION,
     TreeSpec,
@@ -93,7 +93,7 @@ builder = TreeSpecBuilder()
 
 ## Public API
 
-All symbols below are exported from the top-level `deliveryplus_tree_spec` package:
+All symbols below are exported from the top-level `tree_spec` package:
 
 | Category | Symbols |
 |---|---|
@@ -103,7 +103,7 @@ All symbols below are exported from the top-level `deliveryplus_tree_spec` packa
 | Builder | `TreeSpecBuilder`, `TreeSpecError` |
 | Patch | `apply_patch_to_spec_dict`, `PatchApplyError`, `PatchDict`, `ReplacePatch`, … |
 
-There are no subpath exports — import from `deliveryplus_tree_spec` only.
+The top-level `tree_spec` package exposes common helpers; submodules such as `tree_spec.models` and `tree_spec.patch` remain available.
 
 ## Wire contract (high level)
 
@@ -135,7 +135,8 @@ focuses on validation, lint, builder, and patch flows used by backends.
 uv sync --extra dev
 uv run pytest
 uv run ruff check .
-uv run python -m build   # wheel/sdist smoke — full artifact tests in Batch 6
+uv run python -m build
+uv run python scripts/smoke_package.py
 ```
 
 ## Security
@@ -151,3 +152,17 @@ See [SECURITY.md](./SECURITY.md). TreeSpec parsing is **contract validation**, n
 
 - [`@signalsafe/tree-spec`](https://github.com/SignalSafeSoftware/tree-spec) — TypeScript wire contract and compile/lint.
 - [`tree-spec-editor-*`](https://github.com/SignalSafeSoftware/tree-spec-editor) — authoring UI (TypeScript/React).
+
+## Python 0.4 migration
+
+Replace former product-specific imports with `tree_spec` (including submodules).
+The PyPI distribution remains `signalsafe-tree-spec`; upgrade consumers to 0.4.x.
+No compatibility alias is provided.
+
+## Source layout
+
+Runtime code and the packaged version/typing markers live in
+`src/tree_spec/`. Tests, developer scripts and release metadata
+remain outside `src/`. Run `uv sync --frozen --extra dev` before local checks;
+tests use the installed editable package rather than adding `src` to `PYTHONPATH`.
+Wheel and source archives are built into `dist/`.

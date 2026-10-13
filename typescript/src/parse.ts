@@ -31,21 +31,30 @@ function issue(
     };
 }
 
-function isJsonValue(value: unknown, seen = new WeakSet<object>()): value is JsonValue {
-    if (value === null || typeof value === "boolean" || typeof value === "string") return true;
-    if (typeof value === "number") return Number.isFinite(value);
-    if (Array.isArray(value)) {
-        if (seen.has(value)) return false;
-        seen.add(value);
-        const valid = value.every((entry) => isJsonValue(entry, seen));
-        seen.delete(value);
-        return valid;
+function isJsonValue(value: unknown): value is JsonValue {
+    type Frame = { value: unknown; exit: false } | { value: object; exit: true };
+    const pending: Frame[] = [{ value, exit: false }];
+    const ancestors = new WeakSet<object>();
+    while (true) {
+        const frame = pending.pop();
+        if (frame === undefined) return true;
+        if (frame.exit) {
+            ancestors.delete(frame.value);
+            continue;
+        }
+        const current = frame.value;
+        if (current === null || typeof current === "boolean" || typeof current === "string") continue;
+        if (typeof current === "number") {
+            if (!Number.isFinite(current)) return false;
+            continue;
+        }
+        if (!Array.isArray(current) && !isRecord(current)) return false;
+        if (ancestors.has(current)) return false;
+        ancestors.add(current);
+        pending.push({ value: current, exit: true });
+        const children = Array.isArray(current) ? current : Object.values(current);
+        children.forEach((child) => pending.push({ value: child, exit: false }));
     }
-    if (!isRecord(value) || seen.has(value)) return false;
-    seen.add(value);
-    const valid = Object.values(value).every((entry) => isJsonValue(entry, seen));
-    seen.delete(value);
-    return valid;
 }
 
 function requiredText(
@@ -209,13 +218,14 @@ export function parseTreeSpecWire(raw: unknown): TreeSpecValidationResult {
     const rawNodes = raw.nodes;
     if (!isRecord(rawNodes)) issues.push(issue("invalid_field_type", "nodes must be an object.", ["tree_spec", "nodes"]));
     if (isRecord(rawNodes) && Object.keys(rawNodes).length === 0) issues.push(issue("invalid_field_value", "nodes must contain at least one node.", ["tree_spec", "nodes"]));
-    const nodes: Record<string, TreeSpecNodeWire> = {};
+    const nodeEntries: [string, TreeSpecNodeWire][] = [];
     if (isRecord(rawNodes)) {
         for (const [nodeId, rawNode] of Object.entries(rawNodes)) {
             const parsed = parseNode(rawNode, nodeId, ["tree_spec", "nodes", nodeId], issues);
-            if (parsed !== null) nodes[nodeId] = parsed;
+            if (parsed !== null) nodeEntries.push([nodeId, parsed]);
         }
     }
+    const nodes: Record<string, TreeSpecNodeWire> = Object.fromEntries(nodeEntries);
     if (!Array.isArray(raw.transitions)) issues.push(issue("invalid_field_type", "transitions must be an array.", ["tree_spec", "transitions"]));
     const transitions: TreeSpecTransitionWire[] = [];
     if (Array.isArray(raw.transitions)) {

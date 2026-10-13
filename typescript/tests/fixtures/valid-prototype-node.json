@@ -1,0 +1,1 @@
+{"start_node":"__proto__","nodes":{"__proto__":{"type":"decision","prompt":"Choose","choices":[{"id":"go","label":"Go"}]}},"transitions":[{"from":["__proto__","go"],"to":"END","outcome":"safe"}]}

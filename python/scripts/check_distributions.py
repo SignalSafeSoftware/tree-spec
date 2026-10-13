@@ -26,9 +26,9 @@ def main() -> None:
     for wheel in wheels:
         with zipfile.ZipFile(wheel) as archive:
             names = archive.namelist()
-            if "deliveryplus_tree_spec/__init__.py" not in names:
+            if "tree_spec/__init__.py" not in names:
                 raise ValueError("Python wheel lost its public import")
-            if "deliveryplus_tree_spec/py.typed" not in names:
+            if "tree_spec/py.typed" not in names:
                 raise ValueError("Python wheel lost its typing marker")
             reject_javascript(names)
     for sdist in sdists:

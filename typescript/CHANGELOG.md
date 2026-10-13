@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Fix iterative JSON validation, prototype-like node round-trips and preservation of unknown graph-editor metadata; add parity regressions.
+- Share coordinate validation and enforce TypeScript coverage thresholds and Python strict type checks in CI.
+
 - Upgrade vulnerable dependency locks and coordinated test tooling; integrate current Dependabot action updates without changing TreeSpec wire behavior.
 
 - Monitor Python uv dependencies alongside npm/Yarn and Actions; run dependency review through CI on PRs and include high-severity development/unknown-scope vulnerabilities.

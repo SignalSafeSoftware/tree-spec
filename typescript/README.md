@@ -5,10 +5,10 @@ One repository owns both implementations of the TreeSpec wire contract.
 | Distribution | Build directory | Public API |
 | --- | --- | --- |
 | npm `@signalsafe/tree-spec` | `typescript/` | existing TypeScript exports |
-| PyPI `signalsafe-tree-spec` | `../python/` | `deliveryplus_tree_spec` |
+| PyPI `signalsafe-tree-spec` | `../python/` | `tree_spec` |
 
-Registry names, imports, wire behavior and runtime support are preserved.
-Packaging patch candidates: npm 0.4.3 and Python 0.3.1.
+Registry names, wire behavior and runtime support are preserved. Python 0.4 uses the generic `tree_spec` namespace.
+Packaging patch candidates: npm 0.4.3 and Python 0.4.0.
 TypeScript and Python release independently; shared fixtures verify contract parity.
 Run the TypeScript gates below, then `cd ../python && uv sync --extra dev && uv run pytest && uv run python -m build`.
 From the root, `yarn check:distributions` audits both built archives and fixture parity.
@@ -486,7 +486,7 @@ Example transition with feedback:
 | Layer | Package / repo | Role |
 |-------|----------------|------|
 | **TypeScript core (this package)** | `@signalsafe/tree-spec` | Wire format, compile/decompile, lint |
-| **Python core** | [`signalsafe-tree-spec`](https://github.com/SignalSafeSoftware/tree-spec/tree/main/python) (`deliveryplus_tree_spec`) | Backend parity: models, lint, builder, patch |
+| **Python core** | [`signalsafe-tree-spec`](https://github.com/SignalSafeSoftware/tree-spec/tree/main/python) (`tree_spec`) | Backend parity: models, lint, builder, patch |
 | **Simulator runtime** | `@signalsafe/simulator-core` | Headless session stepping |
 | **Editor stack** | `@signalsafe/tree-spec-editor-core` → `-react` → `-editor` | Authoring UI layers |
 

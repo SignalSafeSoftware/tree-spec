@@ -18,4 +18,4 @@ Follow `.codex/skills/ecosystem-release/SKILL.md`. Dependents use caret ranges o
 
 ## Consolidated repository
 
-TypeScript is built and published from `typescript/`; the root package is a private workspace for shared commands. Python is built and published from `python/`. Preserve registry names and `deliveryplus_tree_spec` imports. TypeScript npm artifacts must never include Python source; Python wheel/sdist must never include TypeScript/React source. Run both language gates and `yarn check:distributions`. Use `ts-v*` and `py-v*` release tags independently.
+TypeScript is built and published from `typescript/`; the root package is a private workspace for shared commands. Python is built and published from `python/`. Preserve registry names. Python 0.4 uses only the `tree_spec` namespace; migrate callers directly. TypeScript npm artifacts must never include Python source; Python wheel/sdist must never include TypeScript/React source. Run both language gates and `yarn check:distributions`. Use `ts-v*` and `py-v*` release tags independently.

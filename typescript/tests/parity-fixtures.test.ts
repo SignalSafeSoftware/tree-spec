@@ -1,6 +1,6 @@
 /**
  * Mirrored TreeSpec contract fixtures — keep aligned with
- * `tree-spec-python/tests/fixtures/` and `tests/fixtures/README.md`.
+ * `tree-spec/python/tests/fixtures/` and `tests/fixtures/README.md`.
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -24,9 +24,10 @@ const VALID_FIXTURES = [
     "minimal-valid.json",
     "moderate-valid.json",
     "valid-implicit-wire-version.json",
+    "valid-prototype-node.json",
 ] as const;
 
-describe("TreeSpec parity fixtures (mirrored with tree-spec-python)", () => {
+describe("TreeSpec parity fixtures (mirrored with Python)", () => {
     describe.each(VALID_FIXTURES)("valid fixture %s", (fixtureName) => {
         it("lints clean", () => {
             const raw = loadFixture(fixtureName);
