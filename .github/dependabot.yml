@@ -10,6 +10,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      vitest-tooling:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "vite"
   # Python's independent manifest and lockfile live under python/.
   - package-ecosystem: "uv"
     directory: "/python"
