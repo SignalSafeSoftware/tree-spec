@@ -134,7 +134,7 @@ focuses on validation, lint, builder, and patch flows used by backends.
 ```bash
 uv sync --extra dev
 uv run pytest
-uv run flake8 .
+uv run ruff check .
 uv run python -m build   # wheel/sdist smoke — full artifact tests in Batch 6
 ```
 

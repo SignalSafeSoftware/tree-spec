@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Replace Flake8 with Ruff for Python linting, preserving E/F/W checks and the 120-character line limit.
+
 - Monitor Python uv dependencies alongside npm/Yarn and Actions; run dependency review through CI on PRs and include high-severity development/unknown-scope vulnerabilities.
 
 - Use `ci.yml` to call independent reusable TypeScript/npm and Python/PyPI workflows in parallel, with separate manual publish flags and coverage artifacts.

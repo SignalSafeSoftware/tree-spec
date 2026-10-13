@@ -51,9 +51,9 @@ jobs:
                   .venv/bin/python -m pip install --require-hashes --only-binary :all: --no-deps -r requirements-dev.txt
                   .venv/bin/python -m pip install --no-deps -e .
 
-            - name: Flake8
+            - name: Ruff
               if: matrix.python-version == '3.12'
-              run: .venv/bin/flake8 __init__.py builder.py constants.py lint.py models.py patch.py tests --max-line-length=120 --extend-ignore=E203,W503
+              run: .venv/bin/ruff check __init__.py builder.py constants.py lint.py models.py patch.py tests scripts
 
             - name: Bandit
               if: matrix.python-version == '3.12'

@@ -10,7 +10,7 @@
 
 ## Quality gates
 
-Run `uv sync --extra dev`, `uv run pytest` (coverage must stay at 100%) and `uv run python -m build` for every change. Run `flake8` and `bandit` when touching parsing or models.
+Run `uv sync --extra dev`, `uv run pytest` (coverage must stay at 100%) and `uv run python -m build` for every change. Run `uv run ruff check .` for Python changes and `bandit` when touching parsing or models.
 
 ## Releases
 
