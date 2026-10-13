@@ -1,0 +1,230 @@
+name: CI
+
+on:
+    workflow_dispatch:
+        inputs:
+            publish:
+                description: Publish Python after successful checks
+                type: boolean
+                default: false
+    push:
+        branches: [main]
+        tags: ["py-v*"]
+    pull_request:
+        branches: [main, develop]
+        types: [opened, synchronize, reopened]
+
+concurrency:
+    group: ci-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+defaults:
+    run:
+        working-directory: python
+
+jobs:
+    checks:
+        name: Checks (Python ${{ matrix.python-version }})
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                python-version: ["3.12", "3.13"]
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: actions/setup-python@v7
+              with:
+                  python-version: ${{ matrix.python-version }}
+
+            - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+              with:
+                  enable-cache: true
+
+            - name: Install package and tooling
+              run: |
+                  uv venv --seed
+                  uv export --extra dev --frozen --no-emit-project -o requirements-dev.txt
+                  .venv/bin/python -m pip install --require-hashes --only-binary :all: --no-deps -r requirements-dev.txt
+                  .venv/bin/python -m pip install --no-deps -e .
+
+            - name: Flake8
+              if: matrix.python-version == '3.12'
+              run: .venv/bin/flake8 __init__.py builder.py constants.py lint.py models.py patch.py tests --max-line-length=120 --extend-ignore=E203,W503
+
+            - name: Bandit
+              if: matrix.python-version == '3.12'
+              run: .venv/bin/bandit -r . -q -x ./tests,./.venv
+
+    tests:
+        name: Tests (Python ${{ matrix.python-version }})
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                python-version: ["3.12", "3.13"]
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: actions/setup-python@v7
+              with:
+                  python-version: ${{ matrix.python-version }}
+
+            - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+              with:
+                  enable-cache: true
+
+            - name: Install package and tooling
+              run: |
+                  uv venv --seed
+                  uv export --extra dev --frozen --no-emit-project -o requirements-dev.txt
+                  .venv/bin/python -m pip install --require-hashes --only-binary :all: --no-deps -r requirements-dev.txt
+                  .venv/bin/python -m pip install --no-deps -e .
+
+            - name: Pytest with coverage
+              run: .venv/bin/python -m pytest -q --cov-report=xml
+
+            - name: Upload coverage
+              if: matrix.python-version == '3.12'
+              uses: actions/upload-artifact@v7
+              with:
+                  name: coverage
+                  path: python/coverage.xml
+
+    scan:
+        name: Scan
+        needs: [tests]
+        if: |
+            (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) &&
+            (
+                github.event_name == 'workflow_dispatch' ||
+                github.event_name == 'push' ||
+                (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'scan'))
+            )
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
+        env:
+            SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+
+            - name: Download coverage
+              uses: actions/download-artifact@v8
+              with:
+                  name: coverage
+                  path: python
+
+            - name: Verify coverage report
+              run: test -f coverage.xml
+
+            - name: SonarCloud scan
+              uses: SonarSource/sonarqube-scan-action@ba9859eae8dd6bd29e412f25ddbbef3d032000f4 # v8.2.2
+              with:
+                  projectBaseDir: python
+              env:
+                  SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
+
+            - name: Sonar PR comment
+              if: github.event_name == 'pull_request'
+              uses: actions/github-script@v9
+              with:
+                  script: |
+                      const body = `SonarCloud analysis for \`tree-spec-python\` (\`SignalSafeSoftware_tree-spec\`) completed with result \`${{ job.status }}\`.`;
+                      await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: context.issue.number,
+                          body,
+                      });
+
+    smoke-package:
+        name: Smoke package
+        needs: [checks, tests]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: actions/setup-python@v7
+              with:
+                  python-version: "3.12"
+
+            - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+              with:
+                  enable-cache: true
+
+            - name: Install package and tooling
+              run: |
+                  uv venv --seed
+                  uv export --extra dev --frozen --no-emit-project -o requirements-dev.txt
+                  .venv/bin/python -m pip install --require-hashes --only-binary :all: --no-deps -r requirements-dev.txt
+                  .venv/bin/python -m pip install --no-deps -e .
+
+            - name: Smoke-test wheel artifact
+              run: .venv/bin/python scripts/smoke_package.py
+
+    publish:
+        name: Publish
+        needs: [checks, tests, scan, smoke-package, distributions]
+        if: |
+            (
+              (github.event_name == 'workflow_dispatch' && inputs.publish && github.ref == 'refs/heads/main') ||
+              (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/py-v'))
+            ) &&
+            needs.checks.result == 'success' &&
+            needs.tests.result == 'success' &&
+            (needs.scan.result == 'success' || needs.scan.result == 'skipped')
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+        environment: pypi
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: actions/setup-python@v7
+              with:
+                  python-version: "3.12"
+
+            - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+              with:
+                  enable-cache: true
+
+            - name: Build distributions
+              run: |
+                  uv venv --seed
+                  uv export --extra dev --frozen --no-emit-project -o requirements-dev.txt
+                  .venv/bin/python -m pip install --require-hashes --only-binary :all: --no-deps -r requirements-dev.txt
+                  .venv/bin/python -m build
+                  .venv/bin/twine check dist/*
+
+            - name: Publish to PyPI
+              uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
+              with:
+                  packages-dir: python/dist/
+
+    distributions:
+        name: Cross-language contract and artifact boundaries
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: .
+        steps:
+            - uses: actions/checkout@v7
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: "24"
+            - uses: actions/setup-python@v7
+              with:
+                  python-version: "3.12"
+            - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7
+            - run: corepack enable && yarn install --frozen-lockfile && yarn typecheck && yarn test:coverage && yarn build
+            - run: uv sync --frozen --extra dev && uv run pytest && uv run python -m build
+              working-directory: python
+            - run: yarn check:distributions

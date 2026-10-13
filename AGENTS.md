@@ -2,7 +2,7 @@
 
 ## Wire contract
 
-`@signalsafe/tree-spec` owns the TreeSpec wire contract for TypeScript; `signalsafe-tree-spec` (Python, `../tree-spec-python`) owns the same contract for Python. A change to parsing, lint rules, issue codes, issue paths or normalization must land in both, with matching fixtures in `tests/fixtures` and the Python `tests/fixtures`. Update `docs/compatibility.md` when behavior differs by design. Follow `.codex/skills/treespec-wire-compat/SKILL.md`.
+`@signalsafe/tree-spec` owns the TreeSpec wire contract for TypeScript; `signalsafe-tree-spec` (Python, `python/`) owns the same contract for Python. A change to parsing, lint rules, issue codes, issue paths or normalization must land in both, with matching fixtures in `tests/fixtures` and `python/tests/fixtures`. Update `docs/compatibility.md` when behavior differs by design. Follow `.codex/skills/treespec-wire-compat/SKILL.md`.
 
 - The package is product-neutral. Scoring dimensions, render-hint namespaces, asset rules and unknown-field strictness belong to the host; expose hooks or return generic issues instead of adding product rules.
 - `parseTreeSpecWire` must stay total: never throw on untrusted input, return stable `code` + `path` (and `node_id`/`choice_id` anchors) for every issue.
@@ -15,3 +15,7 @@ Run `yarn typecheck`, `yarn lint`, `yarn test:coverage` (coverage stays at 100%)
 ## Releases
 
 Follow `.codex/skills/ecosystem-release/SKILL.md`. Dependents use caret ranges on 0.x versions, so a minor bump orphans every dependent range: prefer patch bumps for compatible changes and update dependent ranges in the same release plan. Never tag, publish or push without explicit user approval.
+
+## Consolidated repository
+
+TypeScript is built and published from the repository root. Python is built and published from `python/`. Preserve registry names and `deliveryplus_tree_spec` imports. Root npm artifacts must never include Python source; Python wheel/sdist must never include TypeScript/React source. Run both language gates and `yarn check:distributions`. Use `ts-v*` and `py-v*` release tags independently.

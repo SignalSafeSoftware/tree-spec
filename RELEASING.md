@@ -1,3 +1,17 @@
+# Combined repository releases
+
+Build npm from the repository root and Python from `python/`. Keep versions independent.
+Use `ts-v<package.json version>` for npm and `py-v<python/VERSION>` for PyPI.
+Publishing workflows retain all checks and publish only the matching language.
+Manual dispatch requires an explicit publish selection; a default dispatch runs checks only.
+PyPI trusted publishing must point to this repository's `python.yml` workflow and `pypi` environment before release.
+Nothing in this consolidation authorizes publishing, tagging or pushing.
+
+---
+
+The historical instructions below predate consolidation; the language-specific tag,
+manual dispatch and PyPI configuration above supersede their old `v*`/standalone workflow details.
+
 # Releasing `@signalsafe/tree-spec`
 
 Standalone repository: [SignalSafeSoftware/tree-spec](https://github.com/SignalSafeSoftware/tree-spec).

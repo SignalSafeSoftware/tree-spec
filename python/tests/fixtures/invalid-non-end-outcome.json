@@ -1,0 +1,23 @@
+{
+  "wire_version": 1,
+  "start_node": "s",
+  "nodes": {
+    "s": {
+      "type": "prompt",
+      "prompt": "Choose",
+      "choices": [{ "id": "go", "label": "Go" }]
+    },
+    "b": {
+      "type": "prompt",
+      "prompt": "Next",
+      "choices": []
+    }
+  },
+  "transitions": [
+    {
+      "from": ["s", "go"],
+      "to": "b",
+      "outcome": "safe"
+    }
+  ]
+}

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — repository consolidation
+
+- Own Python and TypeScript in one tree-spec repository.
+- Preserve package/import names and wire behavior; publish language-specific archives.
+- Verify fixture parity and distribution isolation in CI.
+
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),

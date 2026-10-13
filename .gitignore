@@ -9,3 +9,17 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.tgz
+
+# Python package builds and local tooling
+python/.venv/
+python/build/
+python/dist/
+python/*.egg-info/
+python/.coverage*
+python/coverage.xml
+python/htmlcov/
+python/requirements-dev.txt
+**/__pycache__/
+**/.pytest_cache/
+
+artifacts/

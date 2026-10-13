@@ -1,3 +1,21 @@
+# TreeSpec — Python and TypeScript
+
+One repository owns both implementations of the TreeSpec wire contract.
+
+| Distribution | Build directory | Public API |
+| --- | --- | --- |
+| npm `@signalsafe/tree-spec` | repository root | existing TypeScript exports |
+| PyPI `signalsafe-tree-spec` | `python/` | `deliveryplus_tree_spec` |
+
+Registry names, imports, wire behavior and runtime support are preserved.
+Packaging patch candidates: npm 0.4.3 and Python 0.3.1.
+TypeScript and Python release independently; shared fixtures verify contract parity.
+Run the TypeScript gates below, then `cd python && uv sync --extra dev && uv run pytest && uv run python -m build`.
+From the root, `yarn check:distributions` audits both built archives and fixture parity.
+See [Python usage](python/README.md) and [release instructions](RELEASING.md).
+
+---
+
 # `@signalsafe/tree-spec`
 
 Generic **TreeSpec** wire format (`TreeSpecWire`), authoring graph model (`TreeGraph`), and **compile / decompile / lint** helpers.

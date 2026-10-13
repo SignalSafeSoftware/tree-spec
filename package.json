@@ -1,6 +1,6 @@
 {
     "name": "@signalsafe/tree-spec",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "type": "module",
     "description": "TypeScript types, graph helpers, compiler utilities, and linting for the TreeSpec decision-tree format.",
     "license": "MIT",
@@ -37,12 +37,12 @@
             "default": "./dist/index.js"
         }
     },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE",
-    "docs"
-  ],
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE",
+        "docs"
+    ],
     "engines": {
         "node": ">=19.0.0"
     },
@@ -68,7 +68,8 @@
         "prepublishOnly": "npm run build",
         "prepare": "npm run build",
         "test": "vitest run",
-        "test:coverage": "yarn test --coverage"
+        "test:coverage": "yarn test --coverage",
+        "check:distributions": "node scripts/check-distributions.mjs"
     },
     "devDependencies": {
         "typescript": "^7.0.2",

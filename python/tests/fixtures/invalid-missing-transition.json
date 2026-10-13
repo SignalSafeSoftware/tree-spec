@@ -1,0 +1,21 @@
+{
+  "wire_version": 1,
+  "start_node": "s",
+  "nodes": {
+    "s": {
+      "type": "prompt",
+      "prompt": "Choose",
+      "choices": [
+        { "id": "ok", "label": "OK" },
+        { "id": "missing", "label": "Missing" }
+      ]
+    }
+  },
+  "transitions": [
+    {
+      "from": ["s", "ok"],
+      "to": "END",
+      "outcome": "safe"
+    }
+  ]
+}
