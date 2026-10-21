@@ -17,10 +17,17 @@ LANGUAGES = {
 
 def source_hashes(language: str) -> dict[str, str]:
     """Record authored language source bytes, excluding generated caches."""
-    suffix = ".ts" if language == "typescript" else ".py"
+    suffixes = {".ts"} if language == "typescript" else {".py"}
+    if language == "tooling":
+        suffixes.add(".mjs")
+    roots = [LANGUAGES[language]]
+    if language == "tooling":
+        roots.append(ROOT / "python/scripts")
     return {
         path.relative_to(ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in sorted(LANGUAGES[language].rglob(f"*{suffix}"))
+        for source in roots
+        for path in sorted(source.rglob("*"))
+        if path.is_file() and path.suffix in suffixes
     }
 
 
@@ -46,18 +53,21 @@ def checked_path(language: str, filename: str) -> str:
     else:
         candidate = ROOT / relative
     resolved = candidate.resolve()
-    if not resolved.is_relative_to(LANGUAGES[language]) or not resolved.is_file():
+    if not resolved.is_relative_to(ROOT) or not resolved.is_file():
+        raise ValueError(f"Missing {language} source: {filename}")
+    if resolved.relative_to(ROOT).as_posix() not in source_hashes(language):
         raise ValueError(f"Missing {language} source: {filename}")
     return resolved.relative_to(ROOT).as_posix()
 
 
-def normalize_typescript() -> int:
-    report = ROOT / "typescript/coverage/lcov.info"
+def normalize_lcov(language: str = "typescript") -> int:
+    reports = {"typescript": "typescript/coverage/lcov.info", "tooling": "artifacts/tooling-js/lcov.info"}
+    report = ROOT / reports[language]
     lines = report.read_text().splitlines()
     count = 0
     for index, line in enumerate(lines):
         if line.startswith("SF:"):
-            lines[index] = "SF:" + checked_path("typescript", line[3:])
+            lines[index] = "SF:" + checked_path(language, line[3:])
             count += 1
     if not count:
         raise ValueError("TypeScript coverage has no source entries")
@@ -95,8 +105,11 @@ def main() -> None:
         if not expected or json.loads(manifest_path(language).read_text()) != expected:
             raise ValueError(f"Coverage source byte mismatch: {language}")
         print(f"Verified {language}: {len(expected)} authored source files")
-    print(f"Normalized reports: {normalize_typescript()} TypeScript, {normalize_xml()} Python sources, "
-          f"{normalize_xml('tooling')} tooling sources")
+    js_manifest = ROOT / "artifacts/tooling-js/source-sha256.json"
+    if json.loads(js_manifest.read_text()) != source_hashes("tooling"):
+        raise ValueError("JavaScript coverage producer source byte mismatch")
+    print(f"Normalized reports: {normalize_lcov()} TypeScript, {normalize_xml()} Python sources, "
+          f"{normalize_xml('tooling')} Python tooling, {normalize_lcov('tooling')} JavaScript tooling sources")
 
 
 if __name__ == "__main__":

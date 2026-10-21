@@ -25,6 +25,8 @@ class CoveragePathsTest(unittest.TestCase):
             directory.mkdir(parents=True)
         (self.root / "typescript/coverage").mkdir()
         (self.root / "artifacts/tooling").mkdir(parents=True)
+        (self.root / "artifacts/tooling-js").mkdir()
+        (self.languages["tooling"] / "check.mjs").write_text("export const checked = true;\n")
         (self.languages["tooling"] / "prepare_sonar_coverage.py").write_text("checked = True\n")
         (self.languages["typescript"] / "parse.ts").write_text("export const valid = true;\n")
         (self.languages["python"] / "__init__.py").write_text("valid = True\n")
@@ -39,12 +41,15 @@ class CoveragePathsTest(unittest.TestCase):
                        '<package><classes><class filename="src/tree_spec/__init__.py"><lines>'
                        '<line number="1" hits="1"/>'
                        '</lines></class></classes></package></packages></coverage>')
+        (self.root / "artifacts/tooling-js/lcov.info").write_text("SF:scripts/check.mjs\nDA:1,1\nend_of_record\n")
         tooling = self.root / "artifacts/tooling/coverage.xml"
         tooling.write_text('<coverage><sources><source>/old/runner</source></sources><packages>'
                            '<package><classes><class filename="scripts/prepare_sonar_coverage.py"/>'
                            '</classes></package></packages></coverage>')
         for language in self.languages:
             coverage.manifest_path(language).write_text(json.dumps(coverage.source_hashes(language)))
+        (self.root / "artifacts/tooling-js/source-sha256.json").write_text(
+            json.dumps(coverage.source_hashes("tooling")))
         with patch("sys.argv", ["prepare_sonar_coverage.py"]):
             coverage.main()
         self.assertIn("SF:typescript/src/parse.ts", lcov.read_text())
@@ -79,7 +84,7 @@ class CoveragePathsTest(unittest.TestCase):
         (self.root / "typescript/coverage/lcov.info").write_text("TN:\n")
         (self.root / "python/coverage.xml").write_text("<coverage/>")
         with self.assertRaisesRegex(ValueError, "no source entries"):
-            coverage.normalize_typescript()
+            coverage.normalize_lcov()
         with self.assertRaisesRegex(ValueError, "no source entries"):
             coverage.normalize_xml()
 
@@ -100,6 +105,13 @@ class CoveragePathsTest(unittest.TestCase):
             coverage.normalize_xml()
         with self.assertRaisesRegex(ValueError, "Unexpected Python"):
             coverage.checked_path("python", "__init__.py")
+
+    def test_javascript_producer_bytes_must_match_checkout(self) -> None:
+        for language in self.languages:
+            coverage.manifest_path(language).write_text(json.dumps(coverage.source_hashes(language)))
+        (self.root / "artifacts/tooling-js/source-sha256.json").write_text("{}")
+        with patch("sys.argv", ["prepare_sonar_coverage.py"]), self.assertRaisesRegex(ValueError, "producer source"):
+            coverage.main()
 
 
 if __name__ == "__main__":

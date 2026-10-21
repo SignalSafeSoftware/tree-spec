@@ -152,3 +152,13 @@ jobs:
                   PYTHONPATH=src .venv/bin/python -m pytest
                   .venv/bin/python -m build
             - run: yarn check:distributions
+            - name: Measure actual JavaScript distribution checker
+              run: |
+                  mkdir -p artifacts/tooling-js artifacts/tooling
+                  node --test --experimental-test-coverage --test-reporter=lcov scripts/check-distributions.mjs > artifacts/tooling-js/lcov.info
+                  python scripts/prepare_sonar_coverage.py record tooling
+                  cp artifacts/tooling/source-sha256.json artifacts/tooling-js/source-sha256.json
+            - uses: actions/upload-artifact@v7
+              with:
+                  name: coverage-tooling-js
+                  path: artifacts/tooling-js/

@@ -46,6 +46,11 @@ def check_supported(schema: dict[str, object]) -> None:
         raise ValueError("Reference refinements must be implemented before generation")
     if "anyOf" in schema and schema.keys() - {"anyOf", "title"}:
         raise ValueError("Union refinements must be implemented before generation")
+    check_supported_children(schema)
+
+
+def check_supported_children(schema: dict[str, object]) -> None:
+    """Validate nested schemas in the original definition/property/item/union order."""
     for key in ("$defs", "properties"):
         value = schema.get(key, {})
         if isinstance(value, dict):

@@ -63,7 +63,7 @@ After **both** children succeed, one root scan analyzes both languages under
 project. Distinct coverage artifacts include hashes of every authored runtime
 source file. Before scanning, CI verifies those bytes against its checkout and
 normalizes LCOV/XML filenames to actual repository-root paths. A separate measured
-XML report covers the CI coverage helper without changing runtime thresholds. Both existing
+XML report covers CI coverage/distribution tooling and actual schema generation without changing runtime thresholds. Both existing
 runtime coverage thresholds remain 100%; scripts and workflows remain visible
 to analysis without claiming runtime coverage for infrastructure.
 
@@ -83,3 +83,8 @@ authorize a release; no tags or publication are part of this CI migration.
 Dependabot checks GitHub Actions at `/`, the npm/Yarn workspace at `/` (where
 `yarn.lock` lives), and the Python uv project at `/python`, all weekly. Adding
 Python monitoring does not change package versions or dependency locks locally.
+
+The internal distribution checker receives the packed npm archive as gzip bytes
+on stdin, never as a filesystem argument. `yarn check:distributions` remains the
+public command and validates both archives and mirrored wire fixtures. Its npm
+CLI is resolved beside the current Node executable without a PATH lookup.
