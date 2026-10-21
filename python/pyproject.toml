@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=82.0.1", "wheel"]
+requires = ["setuptools>=84.2.1,<85", "wheel>=0.46,<1"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -29,7 +29,7 @@ classifiers = [
 dev = [
     "pytest>=8",
     "pytest-cov>=6",
-    "build>=1.2",
+    "build>=1.6.1,<2",
     "twine>=6.1",
     "ruff>=0.17,<1",
     "mypy>=1.17,<3",

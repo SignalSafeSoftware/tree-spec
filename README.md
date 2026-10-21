@@ -38,3 +38,7 @@ Root `docs/` and `scripts/` own cross-language documentation and checks.
 
 Python 0.4 uses the generic `tree_spec` import namespace. Upgrade all Python
 consumers together; the retired product-specific namespace is not provided.
+
+## Prepared coordinated release
+
+This source prepares TypeScript and Python 0.4.4 while preserving the installed DeliveryPlus Step 5 authoring/wire behavior. Source metadata does not imply publication or host adoption. See [current state](docs/current-state-summary.md) and [release gates](RELEASING.md).
