@@ -54,7 +54,8 @@ jobs:
                   python/.venv/bin/ruff check --config python/pyproject.toml scripts/prepare_sonar_coverage.py tests
                   python/.venv/bin/mypy --strict --explicit-package-bases scripts/prepare_sonar_coverage.py tests/test_sonar_coverage.py
                   mkdir -p artifacts/tooling
-                  python/.venv/bin/coverage run --rcfile=/dev/null --data-file=artifacts/tooling/.coverage --source=scripts -m unittest discover -s tests -v
+                  python/.venv/bin/coverage run --rcfile=/dev/null --data-file=artifacts/tooling/.coverage --source=scripts,python/scripts -m unittest discover -s tests -v
+                  PYTHONPATH=python/src python/.venv/bin/coverage run --rcfile=/dev/null --data-file=artifacts/tooling/.coverage --source=scripts,python/scripts --append python/scripts/export_authoring_schema.py typescript/src/authoringSchema.ts --check
                   python/.venv/bin/coverage xml --rcfile=/dev/null --data-file=artifacts/tooling/.coverage -o artifacts/tooling/coverage.xml
                   python/.venv/bin/python scripts/prepare_sonar_coverage.py record tooling
 

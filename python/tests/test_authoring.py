@@ -22,8 +22,10 @@ def test_authoring_fixture_parity(case):
     else:
         with pytest.raises(ValidationError):
             validate_authoring_document(case["value"])
+        adapter = TypeAdapter(TreeSpecAuthoringDocument)
+        encoded = json.dumps(before)
         with pytest.raises(ValidationError):
-            TypeAdapter(TreeSpecAuthoringDocument).validate_json(json.dumps(before), strict=True)
+            adapter.validate_json(encoded, strict=True)
     assert case["value"] == before
 
 
@@ -67,7 +69,8 @@ def test_python_integral_float_wire_version_is_not_coerced():
 def test_legacy_parser_still_ignores_extra_keys_and_inserts_defaults():
     raw = {"start_node": "s", "nodes": {"s": {"options": [{"id": "c", "label": "C"}], "extra": 1}}, "extra": 1}
     parsed = TreeSpec.parse_tree_spec(raw)
-    assert parsed.nodes["s"].type == "prompt" and parsed.nodes["s"].choices[0].id == "c"
+    assert parsed.nodes["s"].type == "prompt"
+    assert parsed.nodes["s"].choices[0].id == "c"
     assert "extra" not in parsed.model_dump()
 
 
@@ -101,7 +104,8 @@ def test_opaque_numbers_preserve_python_scalar_types_without_coercion():
         raw = deepcopy(CASES[0]["value"])
         raw["_ab"] = value
         validated = validate_authoring_document(raw)["_ab"]
-        assert validated == value and type(validated) is type(value)
+        assert validated == value
+        assert type(validated) is type(value)
 
 
 @pytest.mark.parametrize(

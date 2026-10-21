@@ -85,7 +85,6 @@ def _find_missing_transition_issues(
 
 def _find_transition_issues(
     builder: TreeSpecBuilder,
-    trans_map: dict[tuple[str, str], str],
 ) -> list[TreeSpecIssue]:
     issues: list[TreeSpecIssue] = []
     seen: set[tuple[str, str]] = set()
@@ -246,7 +245,7 @@ def lint_tree_spec(builder: TreeSpecBuilder) -> List[TreeSpecIssue]:
         )
 
     issues.extend(_build_node_issues(builder))
-    issues.extend(_find_transition_issues(builder, trans_map))
+    issues.extend(_find_transition_issues(builder))
     issues.extend(_find_missing_transition_issues(builder, trans_map))
     issues.extend(_find_unreachable_node_issues(builder, reachable))
     issues.extend(_find_no_terminal_path_issues(builder, reachable, trans_map))

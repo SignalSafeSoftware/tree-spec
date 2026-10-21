@@ -71,6 +71,10 @@ jobs:
               with:
                   name: coverage-tooling
                   path: artifacts/tooling
+            - uses: actions/download-artifact@v8
+              with:
+                  name: coverage-tooling-js
+                  path: artifacts/tooling-js
             - name: Validate coverage source paths
               run: python scripts/prepare_sonar_coverage.py
             - name: Scan both languages and wait for quality gate
