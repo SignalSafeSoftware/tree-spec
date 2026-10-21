@@ -10,11 +10,11 @@ on:
     workflow_dispatch:
         inputs:
             publish_npm:
-                description: Publish npm after TypeScript checks pass (main only)
+                description: Publish npm after combined quality gate passes (main only)
                 type: boolean
                 default: false
             publish_pypi:
-                description: Publish PyPI after Python checks pass (main only)
+                description: Publish PyPI after combined quality gate passes (main only)
                 type: boolean
                 default: false
 
@@ -28,11 +28,6 @@ jobs:
             contents: read
             pull-requests: write
         uses: ./.github/workflows/typescript.yml
-        with:
-            publish: ${{ (github.event_name == 'workflow_dispatch' && inputs.publish_npm && github.ref == 'refs/heads/main') || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/ts-v')) }}
-        secrets:
-            NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-            PACKAGES_SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
 
     python:
         name: Python / PyPI
@@ -40,11 +35,6 @@ jobs:
             contents: read
             pull-requests: write
         uses: ./.github/workflows/python.yml
-        with:
-            publish: ${{ (github.event_name == 'workflow_dispatch' && inputs.publish_pypi && github.ref == 'refs/heads/main') || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/py-v')) }}
-        secrets:
-            PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-            PACKAGES_SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
 
     dependency-review:
         name: Dependency review
@@ -53,3 +43,156 @@ jobs:
             contents: read
             pull-requests: read
         uses: ./.github/workflows/dependency-review.yml
+
+    combined-scan:
+        name: Combined TreeSpec quality gate
+        needs: [typescript, python]
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+            - uses: actions/setup-python@v7
+              with:
+                  python-version: "3.12"
+            - uses: actions/download-artifact@v8
+              with:
+                  name: coverage-typescript
+                  path: typescript/coverage
+            - uses: actions/download-artifact@v8
+              with:
+                  name: coverage-python
+                  path: python
+            - uses: actions/download-artifact@v8
+              with:
+                  name: coverage-tooling
+                  path: artifacts/tooling
+            - name: Validate coverage source paths
+              run: python scripts/prepare_sonar_coverage.py
+            - name: Scan both languages and wait for quality gate
+              uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+              with:
+                  args: -Dsonar.qualitygate.wait=true
+              env:
+                  SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
+
+    publish-npm:
+        name: Publish npm
+        needs: [typescript, python, combined-scan]
+        if: |
+            !cancelled() &&
+            needs.typescript.result == 'success' &&
+            needs.python.result == 'success' &&
+            needs.combined-scan.result == 'success' &&
+            ((github.event_name == 'workflow_dispatch' && inputs.publish_npm && github.ref == 'refs/heads/main') ||
+             (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/ts-v')))
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: "24"
+
+            - name: Enable Yarn
+              run: corepack enable
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Verify artifact before publish
+              run: yarn smoke:package
+
+            - name: Verify npm release tag version
+              if: github.ref_type == 'tag'
+              run: |
+                  node --input-type=module - <<'JS'
+                  import { readFileSync } from 'node:fs';
+                  const { version } = JSON.parse(readFileSync('typescript/package.json', 'utf8'));
+                  if (process.env.GITHUB_REF_NAME !== `ts-v${version}`) {
+                      throw new Error('npm release tag must match typescript/package.json version');
+                  }
+                  JS
+
+            - name: Check package version
+              run: node -e "const p=require('./typescript/package.json'); console.log(p.name, p.version)"
+
+            - name: Configure npm auth
+              run: |
+                echo "registry=https://registry.npmjs.org/" > ~/.npmrc
+                echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+              env:
+                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - name: Publish to npm
+              run: npm publish --access public --ignore-scripts
+              working-directory: typescript
+              env:
+                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    publish-pypi:
+        name: Publish PyPI
+        needs: [typescript, python, combined-scan]
+        if: |
+            !cancelled() &&
+            needs.typescript.result == 'success' &&
+            needs.python.result == 'success' &&
+            needs.combined-scan.result == 'success' &&
+            ((github.event_name == 'workflow_dispatch' && inputs.publish_pypi && github.ref == 'refs/heads/main') ||
+             (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/py-v')))
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        environment: pypi
+        defaults:
+            run:
+                working-directory: python
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: actions/setup-python@v7
+              with:
+                  python-version: "3.12"
+
+            - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+              with:
+                  enable-cache: true
+
+            - name: Verify Python release tag version
+              if: github.ref_type == 'tag'
+              run: |
+                  python - <<'PYCODE'
+                  import os
+                  from pathlib import Path
+                  version = Path('src/tree_spec/VERSION').read_text().strip()
+                  if os.environ['GITHUB_REF_NAME'] != f'py-v{version}':
+                      raise SystemExit('Python release tag must match python/src/tree_spec/VERSION')
+                  PYCODE
+
+            - name: Build distributions
+              run: |
+                  uv venv --seed
+                  uv export --extra dev --frozen --no-emit-project -o requirements-dev.txt
+                  .venv/bin/python -m pip install --require-hashes --only-binary :all: --no-deps -r requirements-dev.txt
+                  .venv/bin/python -m build
+                  .venv/bin/twine check dist/*
+
+            - name: Verify PyPI credential
+              env:
+                  PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+              run: |
+                  if [ -z "$PYPI_API_TOKEN" ]; then
+                      echo "::error::Configure a package-scoped PYPI_API_TOKEN repository or pypi environment secret before publishing."
+                      exit 1
+                  fi
+
+            - name: Publish to PyPI
+              uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
+              with:
+                  packages-dir: python/dist/
+                  password: ${{ secrets.PYPI_API_TOKEN }}
+                  attestations: false

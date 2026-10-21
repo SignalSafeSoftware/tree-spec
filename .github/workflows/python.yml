@@ -2,17 +2,6 @@ name: TreeSpec Python
 
 on:
     workflow_call:
-        inputs:
-            publish:
-                description: Publish this language after its required checks pass
-                type: boolean
-                required: false
-                default: false
-        secrets:
-            PACKAGES_SONAR_TOKEN:
-                required: false
-            PYPI_API_TOKEN:
-                required: false
 
 concurrency:
     group: tree-spec-python-${{ github.workflow }}-${{ github.ref }}
@@ -58,6 +47,26 @@ jobs:
             - name: Python strict types
               run: .venv/bin/mypy src/tree_spec
 
+            - name: Combined coverage tooling regression tests
+              if: matrix.python-version == '3.12'
+              working-directory: .
+              run: |
+                  python/.venv/bin/ruff check --config python/pyproject.toml scripts/prepare_sonar_coverage.py tests
+                  python/.venv/bin/mypy --strict --explicit-package-bases scripts/prepare_sonar_coverage.py tests/test_sonar_coverage.py
+                  mkdir -p artifacts/tooling
+                  python/.venv/bin/coverage run --rcfile=/dev/null --data-file=artifacts/tooling/.coverage --source=scripts -m unittest discover -s tests -v
+                  python/.venv/bin/coverage xml --rcfile=/dev/null --data-file=artifacts/tooling/.coverage -o artifacts/tooling/coverage.xml
+                  python/.venv/bin/python scripts/prepare_sonar_coverage.py record tooling
+
+            - name: Upload tooling coverage
+              if: matrix.python-version == '3.12'
+              uses: actions/upload-artifact@v7
+              with:
+                  name: coverage-tooling
+                  path: |
+                      artifacts/tooling/coverage.xml
+                      artifacts/tooling/source-sha256.json
+
             - name: Bandit
               if: matrix.python-version == '3.12'
               run: .venv/bin/bandit -r src scripts -q
@@ -90,62 +99,18 @@ jobs:
             - name: Pytest with coverage
               run: .venv/bin/python -m pytest -q --cov-report=xml
 
+            - name: Bind coverage to authored source bytes
+              if: matrix.python-version == '3.12'
+              run: .venv/bin/python ../scripts/prepare_sonar_coverage.py record python
+
             - name: Upload coverage
               if: matrix.python-version == '3.12'
               uses: actions/upload-artifact@v7
               with:
                   name: coverage-python
-                  path: python/coverage.xml
-
-    scan:
-        name: Scan
-        needs: [tests]
-        if: |
-            (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) &&
-            (
-                github.event_name == 'workflow_dispatch' ||
-                github.event_name == 'push' ||
-                (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'scan'))
-            )
-        runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            pull-requests: write
-        env:
-            SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
-        steps:
-            - uses: actions/checkout@v7
-              with:
-                  fetch-depth: 0
-
-            - name: Download coverage
-              uses: actions/download-artifact@v8
-              with:
-                  name: coverage-python
-                  path: python
-
-            - name: Verify coverage report
-              run: test -f coverage.xml
-
-            - name: SonarCloud scan
-              uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
-              with:
-                  projectBaseDir: python
-              env:
-                  SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
-
-            - name: Sonar PR comment
-              if: github.event_name == 'pull_request'
-              uses: actions/github-script@v9
-              with:
-                  script: |
-                      const body = `SonarCloud analysis for \`signalsafe-tree-spec\` (\`SignalSafeSoftware_tree-spec\`) completed with result \`${{ job.status }}\`.`;
-                      await github.rest.issues.createComment({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          issue_number: context.issue.number,
-                          body,
-                      });
+                  path: |
+                      python/coverage.xml
+                      python/source-sha256.json
 
     smoke-package:
         name: Smoke package
@@ -171,66 +136,6 @@ jobs:
 
             - name: Smoke-test wheel artifact
               run: .venv/bin/python scripts/smoke_package.py
-
-    publish:
-        name: Publish
-        needs: [checks, tests, scan, smoke-package, distributions]
-        if: |
-            !cancelled() && inputs.publish &&
-            needs.checks.result == 'success' &&
-            needs.tests.result == 'success' &&
-            needs.smoke-package.result == 'success' &&
-            needs.distributions.result == 'success' &&
-            (needs.scan.result == 'success' || needs.scan.result == 'skipped')
-        runs-on: ubuntu-latest
-        permissions:
-            contents: read
-        environment: pypi
-        steps:
-            - uses: actions/checkout@v7
-
-            - uses: actions/setup-python@v7
-              with:
-                  python-version: "3.12"
-
-            - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
-              with:
-                  enable-cache: true
-
-            - name: Verify Python release tag version
-              if: github.ref_type == 'tag'
-              run: |
-                  python - <<'PYCODE'
-                  import os
-                  from pathlib import Path
-                  version = Path('src/tree_spec/VERSION').read_text().strip()
-                  if os.environ['GITHUB_REF_NAME'] != f'py-v{version}':
-                      raise SystemExit('Python release tag must match python/src/tree_spec/VERSION')
-                  PYCODE
-
-            - name: Build distributions
-              run: |
-                  uv venv --seed
-                  uv export --extra dev --frozen --no-emit-project -o requirements-dev.txt
-                  .venv/bin/python -m pip install --require-hashes --only-binary :all: --no-deps -r requirements-dev.txt
-                  .venv/bin/python -m build
-                  .venv/bin/twine check dist/*
-
-            - name: Verify PyPI credential
-              env:
-                  PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-              run: |
-                  if [ -z "$PYPI_API_TOKEN" ]; then
-                      echo "::error::Configure a package-scoped PYPI_API_TOKEN repository or pypi environment secret before publishing."
-                      exit 1
-                  fi
-
-            - name: Publish to PyPI
-              uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
-              with:
-                  packages-dir: python/dist/
-                  password: ${{ secrets.PYPI_API_TOKEN }}
-                  attestations: false
 
     distributions:
         name: Cross-language contract and artifact boundaries
