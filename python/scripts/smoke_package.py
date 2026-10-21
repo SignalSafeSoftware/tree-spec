@@ -22,7 +22,16 @@ IMPORT_MODULES = [
 NAMED_IMPORTS: list[tuple[str, list[str]]] = [
     (
         "tree_spec",
-        ["TreeSpec", "lint_tree_spec", "TREESPEC_WIRE_VERSION", "TreeSpecBuilder"],
+        [
+            "TreeSpec",
+            "lint_tree_spec",
+            "TREESPEC_WIRE_VERSION",
+            "TreeSpecBuilder",
+            "TreeSpecAuthoringDocument",
+            "validate_authoring_document",
+            "authoring_json_schema",
+            "MAX_AUTHORING_JSON_NUMBER",
+        ],
     ),
 ]
 

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.3] - 2026-10-21
+
+### Added
+
+- Publish the preserved authoring contract, JSON Schema export and matching cross-language fixtures as a stable 0.4.x release.
+
 ### Changed
 
 - Fix iterative JSON validation, prototype-like node round-trips and preservation of unknown graph-editor metadata; add parity regressions.
@@ -31,6 +37,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Validate cross-language fixtures and separate distribution contents in CI.
 - Use independent `ts-v*` (npm) and `py-v*` (PyPI) releases; reject tags that do not match the selected package version.
 - Update build paths, documentation and local artifact commands; remove obsolete monorepo helpers.
+
+## [0.4.1+step5.authoring.20261018.5d3f2a09ed64] - 2026-10-18
+
+### Added
+
+- Isolated local candidate: opt-in strict authoring schema, generated cross-language validation and numeric interoperability bounds. Existing parsers remain unchanged. No publication or host activation is implied.
 
 ## [0.3.0] - 2026-09-08
 

@@ -17,6 +17,10 @@ def test_public_all_symbols_are_importable() -> None:
 def test_public_all_matches_package_module() -> None:
     module = importlib.import_module("tree_spec")
     assert set(module.__all__) == {
+        "MAX_AUTHORING_JSON_NUMBER",
+        "TreeSpecAuthoringDocument",
+        "validate_authoring_document",
+        "authoring_json_schema",
         "ABMeta",
         "ABVariant",
         "Choice",

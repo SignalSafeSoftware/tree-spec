@@ -23,7 +23,8 @@ yarn publish:dry-run
 yarn check:distributions
 ```
 
-Python CI also runs lint, security checks and an isolated wheel smoke test.
+Python CI runs strict types and tests on Python 3.12, 3.13 and 3.14, plus lint,
+security checks and an isolated wheel smoke test.
 Both language fixtures and distribution boundaries must pass before release.
 
 ## npm release
@@ -52,7 +53,8 @@ Repository consolidation does not authorize a release, tag, push or publication.
 
 `ci.yml` is the sole push, pull-request and manual entry point. It calls
 `typescript.yml` and `python.yml` as independent parallel jobs, with no dependency
-between them. On pull requests, it also calls the independent reusable
+between them. Pull-request label additions also trigger CI so adding the `scan`
+label runs the Python Sonar scan. On pull requests, it also calls the independent reusable
 `dependency-review.yml`, which blocks newly introduced high/critical vulnerabilities
 in runtime, development and unknown dependency scopes. Each language retains its own checks, scans, cross-language distribution gate
 and publisher. Coverage artifacts have distinct language names.
