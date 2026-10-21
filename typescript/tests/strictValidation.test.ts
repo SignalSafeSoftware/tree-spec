@@ -20,6 +20,22 @@ describe("strict TreeSpec validation", () => {
         expect(result.value?.nodes.start?.options?.[0]?.id).toBe("finish");
     });
 
+    it.each(["choices", "options"])("reports sparse %s entries at their original positions", (collectionName) => {
+        // Sparse arrays are JavaScript-only input and cannot be represented in JSON fixtures.
+        const collection = [{ id: "finish", label: "Finish" }];
+        collection.length = 2;
+        const result = parseTreeSpecWire({
+            start_node: "start",
+            nodes: { start: { type: "prompt", prompt: "Choose", [collectionName]: collection } },
+            transitions: [terminal],
+        });
+
+        expect(result.value).toBeNull();
+        expect(result.issues.map(({ code, path }) => ({ code, path }))).toEqual([
+            { code: "invalid_field_type", path: ["tree_spec", "nodes", "start", collectionName, 1] },
+        ]);
+    });
+
     it("returns stable locations and codes for malformed graph relationships", () => {
         const result = parseTreeSpecWire({
             start_node: "start",

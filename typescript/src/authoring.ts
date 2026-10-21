@@ -28,7 +28,7 @@ type Schema =
     | { readonly type: "array"; readonly items: Schema; readonly minItems?: number; readonly maxItems?: number }
     | { readonly type: "object"; readonly properties?: Readonly<Record<string, Schema>>; readonly required?: readonly string[]; readonly additionalProperties: false | Schema };
 const definitions: Readonly<Record<string, Schema>> = AUTHORING_SCHEMA.$defs;
-const has = (value: object, key: PropertyKey): boolean => Object.prototype.hasOwnProperty.call(value, key);
+const has = (value: object, key: PropertyKey): boolean => Object.hasOwn(value, key);
 
 function object(value: unknown): value is Record<string, unknown> {
     if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
@@ -42,7 +42,7 @@ function jsonOwnKeys(value: object): boolean {
     const keys = Object.getOwnPropertyNames(value);
     if (Array.isArray(value)) {
         return keys.length === value.length + 1 && keys.every((key) =>
-            key === "length" || (/^(?:0|[1-9][0-9]*)$/.test(key) && Number(key) < value.length));
+            key === "length" || (/^(?:0|[1-9]\d*)$/.test(key) && Number(key) < value.length));
     }
     return keys.every((key) => Object.prototype.propertyIsEnumerable.call(value, key));
 }
@@ -67,23 +67,33 @@ function validate(schema: Schema, value: unknown, path: TreeSpecIssuePath, ances
 
     if (schema.type === "null") return value === null ? [] : [issue(path)];
     if (schema.type === "boolean") return typeof value === "boolean" ? [] : [issue(path)];
-    if (schema.type === "number" || schema.type === "integer") {
-        if (typeof value !== "number" || !Number.isFinite(value) || (schema.type === "integer" && !Number.isInteger(value))) return [issue(path)];
-        return (schema.minimum !== undefined && value < schema.minimum) || (schema.maximum !== undefined && value > schema.maximum) ? [issue(path, true)] : [];
-    }
-    if (schema.type === "string") {
-        if (typeof value !== "string") return [issue(path)];
-        const length = [...value].length;
-        return (schema.minLength !== undefined && length < schema.minLength) || (schema.maxLength !== undefined && length > schema.maxLength) || (schema.enum !== undefined && !schema.enum.includes(value)) ? [issue(path, true)] : [];
-    }
-    if (schema.type === "array") {
-        if (!Array.isArray(value) || !jsonOwnKeys(value) || ancestors.has(value)) return [issue(path)];
-        if ((schema.minItems !== undefined && value.length < schema.minItems) || (schema.maxItems !== undefined && value.length > schema.maxItems)) return [issue(path, true)];
-        ancestors.add(value);
-        const errors = Array.from(value).flatMap((child, index) => validate(schema.items, child, [...path, index], ancestors));
-        ancestors.delete(value);
-        return errors;
-    }
+    if (schema.type === "number" || schema.type === "integer") return validateNumber(schema, value, path);
+    if (schema.type === "string") return validateString(schema, value, path);
+    if (schema.type === "array") return validateArray(schema, value, path, ancestors);
+    return validateObject(schema, value, path, ancestors);
+}
+
+function validateNumber(schema: Extract<Schema, { type: "number" | "integer" }>, value: unknown, path: TreeSpecIssuePath): TreeSpecIssue[] {
+    if (typeof value !== "number" || !Number.isFinite(value) || (schema.type === "integer" && !Number.isInteger(value))) return [issue(path)];
+    return (schema.minimum !== undefined && value < schema.minimum) || (schema.maximum !== undefined && value > schema.maximum) ? [issue(path, true)] : [];
+}
+
+function validateString(schema: Extract<Schema, { type: "string" }>, value: unknown, path: TreeSpecIssuePath): TreeSpecIssue[] {
+    if (typeof value !== "string") return [issue(path)];
+    const length = [...value].length;
+    return (schema.minLength !== undefined && length < schema.minLength) || (schema.maxLength !== undefined && length > schema.maxLength) || (schema.enum !== undefined && !schema.enum.includes(value)) ? [issue(path, true)] : [];
+}
+
+function validateArray(schema: Extract<Schema, { type: "array" }>, value: unknown, path: TreeSpecIssuePath, ancestors: Set<object>): TreeSpecIssue[] {
+    if (!Array.isArray(value) || !jsonOwnKeys(value) || ancestors.has(value)) return [issue(path)];
+    if ((schema.minItems !== undefined && value.length < schema.minItems) || (schema.maxItems !== undefined && value.length > schema.maxItems)) return [issue(path, true)];
+    ancestors.add(value);
+    const errors = Array.from(value).flatMap((child, index) => validate(schema.items, child, [...path, index], ancestors));
+    ancestors.delete(value);
+    return errors;
+}
+
+function validateObject(schema: Extract<Schema, { type: "object" }>, value: unknown, path: TreeSpecIssuePath, ancestors: Set<object>): TreeSpecIssue[] {
     if (!object(value) || !jsonOwnKeys(value) || ancestors.has(value)) return [issue(path)];
     ancestors.add(value);
     const errors: TreeSpecIssue[] = [];
@@ -97,6 +107,7 @@ function validate(schema: Schema, value: unknown, path: TreeSpecIssuePath, ances
     ancestors.delete(value);
     return errors;
 }
+
 
 /** Closed complete core, opaque JSON preserved; graph lint is a separate step.
  * No aliases, trimming, default insertion or legacy-terminal conversion occurs.

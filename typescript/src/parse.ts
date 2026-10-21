@@ -31,6 +31,10 @@ function issue(
     };
 }
 
+function isJsonScalar(value: unknown): boolean {
+    return value === null || typeof value === "boolean" || typeof value === "string" || (typeof value === "number" && Number.isFinite(value));
+}
+
 function isJsonValue(value: unknown): value is JsonValue {
     type Frame = { value: unknown; exit: false } | { value: object; exit: true };
     const pending: Frame[] = [{ value, exit: false }];
@@ -43,11 +47,7 @@ function isJsonValue(value: unknown): value is JsonValue {
             continue;
         }
         const current = frame.value;
-        if (current === null || typeof current === "boolean" || typeof current === "string") continue;
-        if (typeof current === "number") {
-            if (!Number.isFinite(current)) return false;
-            continue;
-        }
+        if (isJsonScalar(current)) continue;
         if (!Array.isArray(current) && !isRecord(current)) return false;
         if (ancestors.has(current)) return false;
         ancestors.add(current);
@@ -141,8 +141,28 @@ function parseNode(value: unknown, nodeId: string, path: TreeSpecIssuePath, issu
     const type = requiredText(value.type, [...path, "type"], issues, nodeId);
     const prompt = requiredText(value.prompt, [...path, "prompt"], issues, nodeId);
     const renderHints = optionalObject(value.render_hints, [...path, "render_hints"], issues, nodeId);
-    const choiceValues: TreeSpecNodeWire["choices"] = [];
-    const optionValues: TreeSpecNodeWire["options"] = [];
+    const collections = parseNodeCollections(value, nodeId, path, issues);
+    if (type === null || prompt === null) return null;
+    return {
+        type,
+        prompt,
+        ...(renderHints === undefined ? {} : { render_hints: renderHints }),
+        ...collections,
+    };
+}
+
+function preferredChoices(choices: unknown, options: unknown): readonly unknown[] | undefined {
+    if (Array.isArray(choices)) return choices;
+    if (Array.isArray(options)) return options;
+    return undefined;
+}
+
+function parseNodeCollections(
+    value: Record<string, unknown>,
+    nodeId: string,
+    path: TreeSpecIssuePath,
+    issues: TreeSpecIssue[],
+): Pick<TreeSpecNodeWire, "choices" | "options"> {
     const choicesValue = value.choices ?? undefined;
     const optionsValue = value.options ?? undefined;
     if (choicesValue !== undefined && !Array.isArray(choicesValue)) {
@@ -151,28 +171,24 @@ function parseNode(value: unknown, nodeId: string, path: TreeSpecIssuePath, issu
     if (optionsValue !== undefined && !Array.isArray(optionsValue)) {
         issues.push(issue("invalid_field_type", "options must be an array.", [...path, "options"], nodeId));
     }
-    const collection: readonly unknown[] | undefined = Array.isArray(choicesValue)
-        ? choicesValue
-        : Array.isArray(optionsValue)
-            ? optionsValue
-            : undefined;
+    const collection = preferredChoices(choicesValue, optionsValue);
     if (collection === undefined) {
         issues.push(issue("invalid_field_value", "A node must define choices or legacy options.", [...path, "choices"], nodeId));
-    } else {
-        for (const [index, rawChoice] of collection.entries()) {
-            const parsed = parseChoice(rawChoice, [...path, Array.isArray(choicesValue) ? "choices" : "options", index], issues, nodeId);
-            if (parsed === null) continue;
-            if (Array.isArray(choicesValue)) choiceValues.push(parsed);
-            else optionValues.push({ id: parsed.id, label: parsed.label, ...(parsed.feedback === undefined ? {} : { feedback: parsed.feedback }) });
-        }
+        return {};
     }
-    if (type === null || prompt === null) return null;
+    const collectionName = Array.isArray(choicesValue) ? "choices" : "options";
+    const parsed: ParsedChoice[] = [];
+    for (const [index, rawChoice] of collection.entries()) {
+        const choice = parseChoice(rawChoice, [...path, collectionName, index], issues, nodeId);
+        if (choice !== null) parsed.push(choice);
+    }
+    if (Array.isArray(choicesValue)) return { choices: parsed };
     return {
-        type,
-        prompt,
-        ...(renderHints === undefined ? {} : { render_hints: renderHints }),
-        ...(Array.isArray(choicesValue) ? { choices: choiceValues } : {}),
-        ...(Array.isArray(optionsValue) && !Array.isArray(choicesValue) ? { options: optionValues } : {}),
+        options: parsed.map((choice) => ({
+            id: choice.id,
+            label: choice.label,
+            ...(choice.feedback === undefined ? {} : { feedback: choice.feedback }),
+        })),
     };
 }
 
@@ -210,12 +226,7 @@ function parseTransition(value: unknown, path: TreeSpecIssuePath, issues: TreeSp
     };
 }
 
-/** Decode untrusted JSON into a normalized, strictly shaped TreeSpec wire document. */
-export function parseTreeSpecWire(raw: unknown): TreeSpecValidationResult {
-    const issues: TreeSpecIssue[] = [];
-    if (!isRecord(raw)) return { value: null, issues: [issue("invalid_root", "TreeSpec must be a JSON object.", ["tree_spec"]) ] };
-    const startNode = requiredText(raw.start_node, ["tree_spec", "start_node"], issues);
-    const rawNodes = raw.nodes;
+function parseNodes(rawNodes: unknown, issues: TreeSpecIssue[]): Record<string, TreeSpecNodeWire> {
     if (!isRecord(rawNodes)) issues.push(issue("invalid_field_type", "nodes must be an object.", ["tree_spec", "nodes"]));
     if (isRecord(rawNodes) && Object.keys(rawNodes).length === 0) issues.push(issue("invalid_field_value", "nodes must contain at least one node.", ["tree_spec", "nodes"]));
     const nodeEntries: [string, TreeSpecNodeWire][] = [];
@@ -225,7 +236,10 @@ export function parseTreeSpecWire(raw: unknown): TreeSpecValidationResult {
             if (parsed !== null) nodeEntries.push([nodeId, parsed]);
         }
     }
-    const nodes: Record<string, TreeSpecNodeWire> = Object.fromEntries(nodeEntries);
+    return Object.fromEntries(nodeEntries);
+}
+
+function parseTransitions(raw: Record<string, unknown>, issues: TreeSpecIssue[]): TreeSpecTransitionWire[] {
     if (!Array.isArray(raw.transitions)) issues.push(issue("invalid_field_type", "transitions must be an array.", ["tree_spec", "transitions"]));
     const transitions: TreeSpecTransitionWire[] = [];
     if (Array.isArray(raw.transitions)) {
@@ -234,7 +248,11 @@ export function parseTreeSpecWire(raw: unknown): TreeSpecValidationResult {
             if (parsed !== null) transitions.push(parsed);
         }
     }
-    const rawWireVersion = raw.wire_version ?? undefined;
+    return transitions;
+}
+
+function parseWireVersion(value: unknown, issues: TreeSpecIssue[]): number | undefined {
+    const rawWireVersion = value ?? undefined;
     let wireVersion: number | undefined;
     if (rawWireVersion !== undefined && (typeof rawWireVersion !== "number" || !Number.isInteger(rawWireVersion))) {
         issues.push(issue("invalid_field_type", "wire_version must be an integer when present.", ["tree_spec", "wire_version"]));
@@ -244,6 +262,17 @@ export function parseTreeSpecWire(raw: unknown): TreeSpecValidationResult {
             issues.push(issue("unsupported_wire_version", `Unsupported wire_version ${wireVersion}; only ${TREESPEC_WIRE_VERSION} is supported.`, ["tree_spec", "wire_version"]));
         }
     }
+    return wireVersion;
+}
+
+/** Decode untrusted JSON into a normalized, strictly shaped TreeSpec wire document. */
+export function parseTreeSpecWire(raw: unknown): TreeSpecValidationResult {
+    const issues: TreeSpecIssue[] = [];
+    if (!isRecord(raw)) return { value: null, issues: [issue("invalid_root", "TreeSpec must be a JSON object.", ["tree_spec"]) ] };
+    const startNode = requiredText(raw.start_node, ["tree_spec", "start_node"], issues);
+    const nodes = parseNodes(raw.nodes, issues);
+    const transitions = parseTransitions(raw, issues);
+    const wireVersion = parseWireVersion(raw.wire_version, issues);
     const meta = optionalObject(raw._meta, ["tree_spec", "_meta"], issues);
     const ab = optionalJson(raw._ab, ["tree_spec", "_ab"], issues);
     if (startNode === null || issues.length > 0) return { value: null, issues };

@@ -4,7 +4,7 @@ import {
     TREESPEC_WIRE_VERSION,
     TREE_SPEC_ISSUE_SEVERITY,
 } from "./constants.js";
-import type { TreeSpecIssue, TreeSpecWire } from "./types.js";
+import type { TreeSpecIssue, TreeSpecIssuePath, TreeSpecTransitionWire, TreeSpecWire } from "./types.js";
 
 function lintWireVersion(raw: TreeSpecWire): TreeSpecIssue[] {
     const wv = raw.wire_version;
@@ -125,6 +125,35 @@ export function lintTreeSpecGraph(raw: TreeSpecWire): TreeSpecIssue[] {
     const nodes = Object.fromEntries(
         Object.entries(raw.nodes).filter(([nodeId]) => nodeId !== END_NODE_ID && nodeId !== LEGACY_END_NODE_ID),
     );
+    const choiceIds = collectChoiceIds(nodes, issues);
+
+    if (!(raw.start_node in nodes)) {
+        issues.push(graphIssue(
+            "start_node_not_found",
+            `Start node ${JSON.stringify(raw.start_node)} is not present in tree_spec.nodes.`,
+            ["tree_spec", "start_node"],
+            raw.start_node,
+        ));
+    }
+
+    const { transitionsBySource, adjacency, reverse, terminalSources } = collectGraphEdges(raw, nodes, choiceIds, issues);
+
+    lintMissingTransitions(nodes, transitionsBySource, issues);
+
+    lintReachability(raw.start_node, nodes, adjacency, reverse, terminalSources, issues);
+    return issues;
+}
+
+type GraphNodes = TreeSpecWire["nodes"];
+type TransitionSources = Map<string, { nodeId: string; target: string }>;
+interface GraphEdges {
+    transitionsBySource: TransitionSources;
+    adjacency: Map<string, Set<string>>;
+    reverse: Map<string, Set<string>>;
+    terminalSources: Set<string>;
+}
+
+function collectChoiceIds(nodes: GraphNodes, issues: TreeSpecIssue[]): Map<string, Set<string>> {
     const choiceIds = new Map<string, Set<string>>();
     for (const [nodeId, node] of Object.entries(nodes)) {
         const choices = activeChoices(node);
@@ -152,15 +181,10 @@ export function lintTreeSpecGraph(raw: TreeSpecWire): TreeSpecIssue[] {
         choiceIds.set(nodeId, ids);
     }
 
-    if (!(raw.start_node in nodes)) {
-        issues.push(graphIssue(
-            "start_node_not_found",
-            `Start node ${JSON.stringify(raw.start_node)} is not present in tree_spec.nodes.`,
-            ["tree_spec", "start_node"],
-            raw.start_node,
-        ));
-    }
+    return choiceIds;
+}
 
+function collectGraphEdges(raw: TreeSpecWire, nodes: GraphNodes, choiceIds: ReadonlyMap<string, ReadonlySet<string>>, issues: TreeSpecIssue[]): GraphEdges {
     const transitionsBySource = new Map<string, { nodeId: string; target: string }>();
     const adjacency = new Map<string, Set<string>>();
     const reverse = new Map<string, Set<string>>();
@@ -181,6 +205,31 @@ export function lintTreeSpecGraph(raw: TreeSpecWire): TreeSpecIssue[] {
             transitionsBySource.set(key, { nodeId: fromNodeId, target: transition.to });
         }
 
+        lintTransitionSource(transition, path, choiceIds, issues);
+
+        const terminal = transition.to === END_NODE_ID || transition.to === LEGACY_END_NODE_ID;
+        if (terminal) terminalSources.add(fromNodeId);
+        lintTransitionOutcome(transition, path, terminal, issues);
+
+        if (!terminal && !(transition.to in nodes)) {
+            issues.push(graphIssue(
+                "transition_target_not_found",
+                `Transition target ${JSON.stringify(transition.to)} is not present in tree_spec.nodes.`,
+                [...path, "to"],
+                fromNodeId,
+                fromChoiceId,
+            ));
+        } else if (!terminal) {
+            addEdge(adjacency, fromNodeId, transition.to);
+            addEdge(reverse, transition.to, fromNodeId);
+        }
+    }
+
+    return { transitionsBySource, adjacency, reverse, terminalSources };
+}
+
+function lintTransitionSource(transition: TreeSpecTransitionWire, path: TreeSpecIssuePath, choiceIds: ReadonlyMap<string, ReadonlySet<string>>, issues: TreeSpecIssue[]): void {
+    const [fromNodeId, fromChoiceId] = transition.from;
         const nodeChoices = choiceIds.get(fromNodeId);
         if (nodeChoices === undefined) {
             issues.push(graphIssue(
@@ -200,9 +249,11 @@ export function lintTreeSpecGraph(raw: TreeSpecWire): TreeSpecIssue[] {
             ));
         }
 
-        const terminal = transition.to === END_NODE_ID || transition.to === LEGACY_END_NODE_ID;
+}
+
+function lintTransitionOutcome(transition: TreeSpecTransitionWire, path: TreeSpecIssuePath, terminal: boolean, issues: TreeSpecIssue[]): void {
+    const [fromNodeId, fromChoiceId] = transition.from;
         if (terminal) {
-            terminalSources.add(fromNodeId);
             if (transition.outcome === undefined) {
                 issues.push(graphIssue(
                     "missing_terminal_outcome",
@@ -222,20 +273,9 @@ export function lintTreeSpecGraph(raw: TreeSpecWire): TreeSpecIssue[] {
             ));
         }
 
-        if (!terminal && !(transition.to in nodes)) {
-            issues.push(graphIssue(
-                "transition_target_not_found",
-                `Transition target ${JSON.stringify(transition.to)} is not present in tree_spec.nodes.`,
-                [...path, "to"],
-                fromNodeId,
-                fromChoiceId,
-            ));
-        } else if (!terminal) {
-            addEdge(adjacency, fromNodeId, transition.to);
-            addEdge(reverse, transition.to, fromNodeId);
-        }
-    }
+}
 
+function lintMissingTransitions(nodes: GraphNodes, transitionsBySource: ReadonlyMap<string, { nodeId: string; target: string }>, issues: TreeSpecIssue[]): void {
     for (const [nodeId, node] of Object.entries(nodes)) {
         for (const [choiceIndex, choice] of activeChoices(node).entries()) {
             if (transitionsBySource.has(sourceKey(nodeId, choice.id))) continue;
@@ -249,13 +289,16 @@ export function lintTreeSpecGraph(raw: TreeSpecWire): TreeSpecIssue[] {
         }
     }
 
-    if (!(raw.start_node in nodes)) return issues;
-    const reachable = walkGraph([raw.start_node], adjacency);
+}
+
+function lintReachability(startNode: string, nodes: GraphNodes, adjacency: ReadonlyMap<string, ReadonlySet<string>>, reverse: ReadonlyMap<string, ReadonlySet<string>>, terminalSources: ReadonlySet<string>, issues: TreeSpecIssue[]): void {
+    if (!(startNode in nodes)) return;
+    const reachable = walkGraph([startNode], adjacency);
     for (const nodeId of Object.keys(nodes)) {
         if (reachable.has(nodeId)) continue;
         issues.push(graphIssue(
             "unreachable_node",
-            `Node ${JSON.stringify(nodeId)} is unreachable from start node ${JSON.stringify(raw.start_node)}.`,
+            `Node ${JSON.stringify(nodeId)} is unreachable from start node ${JSON.stringify(startNode)}.`,
             ["tree_spec", "nodes", nodeId],
             nodeId,
             undefined,
@@ -272,5 +315,4 @@ export function lintTreeSpecGraph(raw: TreeSpecWire): TreeSpecIssue[] {
             nodeId,
         ));
     }
-    return issues;
 }
