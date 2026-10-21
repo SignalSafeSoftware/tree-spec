@@ -30,9 +30,9 @@ Both language fixtures and distribution boundaries must pass before release.
 ## npm release
 
 Update `typescript/package.json` and `typescript/CHANGELOG.md`. The CI workflow
-publishes only after its checks, tests, scan, smoke, runtime compatibility and
-distribution jobs succeed. Same-repository PRs run the Sonar scan; fork PRs skip
-it. Configure `NPM_TOKEN` for non-interactive publishing; CI keeps auth in the
+publishes only after both language quality workflows and the combined Sonar quality
+gate succeed. Same-repository PRs run the combined scan; fork PRs skip it and
+cannot publish. Configure `NPM_TOKEN` for non-interactive publishing; CI keeps auth in the
 runner's npm configuration, never in this repository.
 
 An explicitly requested release can use `ts-v<typescript/package.json version>`
@@ -51,27 +51,34 @@ Repository consolidation does not authorize a release, tag, push or publication.
 
 ## Parallel workflow ownership
 
-`ci.yml` is the sole push, pull-request and manual entry point. It calls
-`typescript.yml` and `python.yml` as independent parallel jobs, with no dependency
-between them. Pull-request label additions also trigger CI so adding the `scan`
-label runs the Python Sonar scan. On pull requests, it also calls the independent reusable
-`dependency-review.yml`, which blocks newly introduced high/critical vulnerabilities
-in runtime, development and unknown dependency scopes. Each language retains its own checks, scans, cross-language distribution gate
-and publisher. Coverage artifacts have distinct language names.
+`ci.yml` is the sole push, pull-request and manual entry point. Its quality-only
+`typescript.yml` and `python.yml` reusable children run in parallel and retain all
+language checks, runtime compatibility, packed smoke, shared wire fixtures and
+distribution boundaries. Children no longer accept the internal `publish` input
+or publishing secrets: a child invocation cannot publish before the combined gate.
+The root dependency-review job still blocks newly introduced high/critical risks.
 
-Manual dispatch on `main` can select either or both publish flags; both default
-false. A `ts-v*` tag enables npm only; a `py-v*` tag enables PyPI only. Tags must
-match their package versions. One publisher's failure does not skip or cancel the
-other language job; the overall CI run still fails so partial releases are visible.
-Retries require checking which version reached its registry before rerunning.
+After **both** children succeed, one root scan analyzes both languages under
+`SignalSafeSoftware_tree-spec-ts`. There is no submission to a separate Python
+project. Distinct coverage artifacts include hashes of every authored runtime
+source file. Before scanning, CI verifies those bytes against its checkout and
+normalizes LCOV/XML filenames to actual repository-root paths. A separate measured
+XML report covers the CI coverage helper without changing runtime thresholds. Both existing
+runtime coverage thresholds remain 100%; scripts and workflows remain visible
+to analysis without claiming runtime coverage for infrastructure.
 
-PyPI does not currently support trusted publishing from reusable workflows.
-This architecture uses a package-scoped `PYPI_API_TOKEN` secret for the Python
-publisher, disables trusted-publisher attestations, and retains the `pypi`
-environment. The reusable workflow receives the repository secret; an environment
-secret with the same name takes precedence in the publish job. See
-[PyPI's reusable-workflow limitation](https://docs.pypi.org/trusted-publishers/troubleshooting/).
-Configure this secret before release; no credential was created or publication run.
+Root publisher jobs require successful TypeScript, Python and combined quality
+gate results. A skipped or failed combined gate cannot publish. Public interfaces
+are unchanged: manual dispatch on `main` can select either or both `publish_npm`
+and `publish_pypi` flags (default false); `ts-v*` selects npm and `py-v*` selects
+PyPI. Existing exact tag/version checks remain. Publisher failures remain visible
+independently; check registries before retrying a partial release.
+
+The PyPI publisher retains package-scoped `PYPI_API_TOKEN`, the `pypi` environment,
+`python/` command working directory and `python/dist/` upload path. An environment
+secret of the same name takes precedence. npm retains `NPM_TOKEN` and publication
+from `typescript/`. Moving publishers to root does not change authentication or
+authorize a release; no tags or publication are part of this CI migration.
 
 Dependabot checks GitHub Actions at `/`, the npm/Yarn workspace at `/` (where
 `yarn.lock` lives), and the Python uv project at `/python`, all weekly. Adding
