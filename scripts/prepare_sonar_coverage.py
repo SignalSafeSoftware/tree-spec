@@ -77,8 +77,7 @@ def normalize_xml(language: str = "python") -> int:
     sources = tree.find("sources")
     if sources is None:
         raise ValueError("Python coverage has no sources element")
-    for source in list(sources):
-        sources.remove(source)
+    sources[:] = []
     ET.SubElement(sources, "source").text = "."
     tree.write(report, encoding="unicode", xml_declaration=True)
     return len(classes)

@@ -152,7 +152,11 @@ jobs:
               with:
                   python-version: "3.12"
             - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884
-            - run: corepack enable && yarn install --frozen-lockfile && yarn typecheck && yarn test:coverage && yarn build
-            - run: uv sync --frozen --extra dev && uv run pytest && uv run python -m build
+            - run: corepack enable && yarn install --frozen-lockfile --ignore-scripts && yarn typecheck && yarn test:coverage && yarn build
+            - name: Locked binary dependencies and explicit source verification
               working-directory: python
+              run: |
+                  uv sync --frozen --extra dev --no-build --no-install-project
+                  PYTHONPATH=src .venv/bin/python -m pytest
+                  .venv/bin/python -m build
             - run: yarn check:distributions

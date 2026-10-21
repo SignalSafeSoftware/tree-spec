@@ -102,7 +102,7 @@ jobs:
               run: corepack enable
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              run: yarn install --frozen-lockfile --ignore-scripts
 
             - name: Verify artifact before publish
               run: yarn smoke:package
