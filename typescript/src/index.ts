@@ -48,3 +48,8 @@ export type {
     GraphEditorMeta,
     GraphEditorViewport,
 } from "./graphEditorMeta.js";
+
+export { validateAuthoringDocument } from "./authoring.js";
+export type { AuthoringJsonValue, AuthoringChoice, AuthoringNode, AuthoringTransition, TreeSpecAuthoringDocument, AuthoringValidationResult } from "./authoring.js";
+
+export { MAX_AUTHORING_JSON_NUMBER } from "./authoringSchema.js";

@@ -81,3 +81,55 @@ See the TypeScript doc for JSON samples. Behavior for `_meta` and invalid
 - Python: `tests/test_unknown_fields.py`
 - TypeScript: `tests/unknown-fields.test.ts`
 - Shared fixtures: `tests/fixtures/README.md`
+
+## Additive complete authoring contract (unreleased)
+
+`TreeSpecAuthoringDocument` / `validate_authoring_document` /
+`authoring_json_schema` in Python and `validateAuthoringDocument` in TypeScript
+are an **opt-in** stricter write boundary. Existing `TreeSpec`,
+`TreeSpecBuilder`, `parseTreeSpecWire`, compile and lint behavior is unchanged.
+The TypeScript runtime consumes a checked-in schema generated from the Python
+Pydantic authority; regenerate with:
+
+```sh
+PYTHONPATH=python/src python python/scripts/export_authoring_schema.py typescript/src/authoringSchema.ts
+```
+
+The Python authoring tests run the generator in `--check` mode, so unsupported
+schema keywords or stale generated output fail the gate. The generated schema
+is the structural authority; TypeScript does not maintain another field-rule
+list. Python exposes native Pydantic ValidationError diagnostics, while the
+TypeScript result uses existing `invalid_field_type` / `invalid_field_value`
+issues with paths starting `tree_spec`. These diagnostic envelopes intentionally
+differ; mirrored fixtures pin identical JSON acceptance and exact value
+preservation, rather than Pydantic's internal union error names/messages.
+
+Core root, node, choice and transition objects reject extra keys. Root requires
+`start_node`, `nodes`, `transitions`; nodes require `type`, `prompt`, `choices`;
+choices require `id`, `label`; transitions require the two-string `from` array
+and `to`. Optional keys stay absent and explicit null is accepted only where
+the declared opaque JSON value permits it. No default keys, trimming,
+`options` alias migration, `ab` alias migration or terminal-ID conversion is
+performed. A `to` string equal to `__END__` is preserved verbatim; graph semantics
+and any legacy-to-current conversion are separate, explicit operations.
+Empty prompts/choices, missing targets and other unfinished *semantic* graphs
+may pass structure; run appropriate graph lint before publication/execution.
+This API does not represent missing required structural draft fields such as `{}`.
+
+Opaque `_ab`, feedback, delta and lessons_triggered values remain arbitrary JSON;
+`_meta` and render_hints are JSON objects with arbitrary string keys. No score,
+asset, simulator, feedback or metadata namespace is interpreted here. Hosts own
+those extension refinements, authorization and resource limits. Opaque numbers
+are finite and within `±MAX_AUTHORING_JSON_NUMBER` (`2^53 - 1`) to preserve
+interoperability with JavaScript; numeric strings and full-width ID strings stay
+strings. Bounds appear in exported schema and both validators reject overflow.
+Booleans remain booleans and are not coerced into numbers. Core wire_version,
+when present, must be integer 1. Python rejects an explicit Python/decoded-JSON
+float 1.0 for that integer field; JavaScript cannot distinguish numeric spellings
+1 and 1.0 after parsing. This representational difference is intentional; neither
+API converts authored strings/booleans to integers. String bounds count Unicode
+code points in both validators. Nonfinite/cyclic/non-JSON extensions are rejected.
+
+Validation is non-mutating. It is not a serialization/canonical-hash algorithm,
+resource quota, imported-document migration, or proof of graph/product readiness.
+Legacy runtime parsing and its prior opaque compatibility remain available.

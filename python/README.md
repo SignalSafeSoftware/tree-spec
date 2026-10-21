@@ -1,5 +1,7 @@
 # signalsafe-tree-spec (Python)
 
+Current source and planned customer-subdomain impact: [current-state summary](../docs/current-state-summary.md).
+
 Python implementation of the **TreeSpec wire contract**: Pydantic models, parsing, lint, patch helpers, and constants. Backend counterpart to [`@signalsafe/tree-spec`](https://github.com/SignalSafeSoftware/tree-spec) on npm.
 
 | | |
