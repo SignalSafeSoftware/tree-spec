@@ -8,7 +8,8 @@ One repository owns both implementations of the TreeSpec wire contract.
 | PyPI `signalsafe-tree-spec` | `../python/` | `tree_spec` |
 
 Registry names, wire behavior and runtime support are preserved. Python 0.4 uses the generic `tree_spec` namespace.
-Packaging patch candidates: npm 0.4.3 and Python 0.4.0.
+Coordinated compatible source versions: npm 0.4.4 and Python 0.4.4. Publication
+is a separate approved operation; the registry distributions remain independent.
 TypeScript and Python release independently; shared fixtures verify contract parity.
 Run the TypeScript gates below, then `cd ../python && uv sync --extra dev && uv run pytest && uv run python -m build`.
 From the root, `yarn check:distributions` audits both built archives and fixture parity.

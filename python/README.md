@@ -168,3 +168,7 @@ Runtime code and the packaged version/typing markers live in
 remain outside `src/`. Run `uv sync --frozen --extra dev` before local checks;
 tests use the installed editable package rather than adding `src` to `PYTHONPATH`.
 Wheel and source archives are built into `dist/`.
+
+## Release preparation
+
+The maintained source prepares Python 0.4.4 alongside npm 0.4.4. The `tree_spec` namespace owns the current Python API; the standalone `deliveryplus_tree_spec` repository is retired. See [the coordinated release state](../docs/current-state-summary.md) and [release gates](../RELEASING.md). No publication or consumer adoption is implied by this version change.

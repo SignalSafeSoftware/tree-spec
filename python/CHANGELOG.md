@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.4] - 2026-10-21
+
+### Changed
+
+- Prepare the compatible stable release while preserving installed Step 5 authoring, JSON-key and opaque-extension behavior.
+- Retain legacy parser normalization separately from strict opt-in authoring validation; paired fixtures and public declarations remain compatible.
+- Use one combined TypeScript/Python quality analysis; both publishers require both complete language suites and the actual combined quality gate.
+- Resolve verified quality findings without changing wire issue ordering; document independent tags, real coverage and retired legacy ownership.
+- Bound setuptools/wheel build tooling and avoid the yanked Python build 1.5.1 development tool.
+- Release preparation only; publication is a separate approved operation.
+
 ## [0.4.3] - 2026-10-21
 
 ### Added
