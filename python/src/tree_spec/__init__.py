@@ -7,6 +7,10 @@ See ``README.md`` in this package for scope, dependency rules, and cross-languag
 (``contracts/tree-spec/``).
 """
 
+from tree_spec.authoring import MAX_AUTHORING_JSON_NUMBER
+from tree_spec.authoring import TreeSpecAuthoringDocument
+from tree_spec.authoring import validate_authoring_document
+from tree_spec.authoring import authoring_json_schema
 from tree_spec.builder import TreeSpecBuilder
 from tree_spec.builder import TreeSpecError
 from tree_spec.constants import END_NODE_ID
@@ -31,6 +35,10 @@ from tree_spec.patch import apply_patch_to_spec_dict
 from tree_spec.patch import PatchApplyError
 
 __all__ = [
+    "MAX_AUTHORING_JSON_NUMBER",
+    "TreeSpecAuthoringDocument",
+    "validate_authoring_document",
+    "authoring_json_schema",
     "ABMeta",
     "ABVariant",
     "Choice",

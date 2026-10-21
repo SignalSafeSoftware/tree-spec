@@ -1,0 +1,2384 @@
+[
+  {
+    "name": "complete-no-default-insertion",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "all-opaque-extension-buckets",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "render_hints": {},
+              "feedback": null
+            }
+          ],
+          "render_hints": {
+            "namespace": {
+              "opaque": true
+            }
+          }
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {
+            "score": "host-owned-not-interpreted"
+          },
+          "feedback": [
+            false,
+            ""
+          ],
+          "lessons_triggered": {
+            "host": "opaque"
+          }
+        }
+      ],
+      "wire_version": 1,
+      "_meta": {
+        "zero": 0,
+        "false": false,
+        "blank": "",
+        "nested": [
+          null,
+          2.5,
+          {
+            "vendor": "value"
+          }
+        ]
+      },
+      "_ab": {
+        "custom": [
+          null,
+          false
+        ]
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "opaque-json-0",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "feedback": null
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": null,
+          "feedback": null,
+          "lessons_triggered": null
+        }
+      ],
+      "_ab": null
+    },
+    "valid": true
+  },
+  {
+    "name": "opaque-json-1",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "feedback": true
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": true,
+          "feedback": true,
+          "lessons_triggered": true
+        }
+      ],
+      "_ab": true
+    },
+    "valid": true
+  },
+  {
+    "name": "opaque-json-2",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "feedback": false
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": false,
+          "feedback": false,
+          "lessons_triggered": false
+        }
+      ],
+      "_ab": false
+    },
+    "valid": true
+  },
+  {
+    "name": "opaque-json-3",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "feedback": 0
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": 0,
+          "feedback": 0,
+          "lessons_triggered": 0
+        }
+      ],
+      "_ab": 0
+    },
+    "valid": true
+  },
+  {
+    "name": "opaque-json-4",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "feedback": 2.5
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": 2.5,
+          "feedback": 2.5,
+          "lessons_triggered": 2.5
+        }
+      ],
+      "_ab": 2.5
+    },
+    "valid": true
+  },
+  {
+    "name": "opaque-json-5",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "feedback": ""
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": "",
+          "feedback": "",
+          "lessons_triggered": ""
+        }
+      ],
+      "_ab": ""
+    },
+    "valid": true
+  },
+  {
+    "name": "opaque-json-6",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "feedback": []
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": [],
+          "feedback": [],
+          "lessons_triggered": []
+        }
+      ],
+      "_ab": []
+    },
+    "valid": true
+  },
+  {
+    "name": "opaque-json-7",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "feedback": {}
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {},
+          "feedback": {},
+          "lessons_triggered": {}
+        }
+      ],
+      "_ab": {}
+    },
+    "valid": true
+  },
+  {
+    "name": "opaque-json-8",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "feedback": [
+                "x"
+              ]
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": [
+            "x"
+          ],
+          "feedback": [
+            "x"
+          ],
+          "lessons_triggered": [
+            "x"
+          ]
+        }
+      ],
+      "_ab": [
+        "x"
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "opaque-json-9",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "feedback": {
+                "nested": [
+                  1,
+                  false,
+                  null
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {
+            "nested": [
+              1,
+              false,
+              null
+            ]
+          },
+          "feedback": {
+            "nested": [
+              1,
+              false,
+              null
+            ]
+          },
+          "lessons_triggered": {
+            "nested": [
+              1,
+              false,
+              null
+            ]
+          }
+        }
+      ],
+      "_ab": {
+        "nested": [
+          1,
+          false,
+          null
+        ]
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "structural-only-semantic-errors-deferred",
+    "value": {
+      "start_node": "missing",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": []
+        }
+      },
+      "transitions": []
+    },
+    "valid": true
+  },
+  {
+    "name": "terminal-string-preserved-without-conversion",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "__END__",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "unicode-codepoint-max",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "empty-prompt-preserved",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": true
+  },
+  {
+    "name": "wrong-root-None",
+    "value": null,
+    "valid": false
+  },
+  {
+    "name": "wrong-root-[]",
+    "value": [],
+    "valid": false
+  },
+  {
+    "name": "wrong-root-3",
+    "value": 3,
+    "valid": false
+  },
+  {
+    "name": "wrong-root-True",
+    "value": true,
+    "valid": false
+  },
+  {
+    "name": "wrong-root-x",
+    "value": "x",
+    "valid": false
+  },
+  {
+    "name": "required-root-start_node",
+    "value": {
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "required-root-nodes",
+    "value": {
+      "start_node": "s",
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "required-root-transitions",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "required-node-type",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "required-node-prompt",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "required-node-choices",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  "
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "required-choice-id",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "required-choice-label",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "required-transition-from",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "required-transition-to",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "root-extra",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ],
+      "mystery": 1
+    },
+    "valid": false
+  },
+  {
+    "name": "root-legacy-ab-alias",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ],
+      "ab": {}
+    },
+    "valid": false
+  },
+  {
+    "name": "node-extra",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ],
+          "extra": 1
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "node-legacy-options",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ],
+          "options": []
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "choice-extra",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "extra": 1
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "transition-extra",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "extra": 1
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "nodes-array",
+    "value": {
+      "start_node": "s",
+      "nodes": [],
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "node-scalar",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": 1
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "choices-object",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": {}
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "choice-scalar",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            1
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "transitions-object",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": {}
+    },
+    "valid": false
+  },
+  {
+    "name": "transition-scalar",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        1
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "empty-start",
+    "value": {
+      "start_node": "",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "bool-start",
+    "value": {
+      "start_node": true,
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "number-type",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": 1,
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "long-type",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "empty-type",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "null-prompt",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": null,
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "long-id",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "long-label",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": "🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀"
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "empty-label",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": ""
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "null-meta",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ],
+      "_meta": null
+    },
+    "valid": false
+  },
+  {
+    "name": "array-meta",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ],
+      "_meta": []
+    },
+    "valid": false
+  },
+  {
+    "name": "null-node-hints",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ],
+          "render_hints": null
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "array-choice-hints",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C ",
+              "render_hints": []
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "from-short",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "from-long",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c",
+            "x"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "from-not-list",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": "s",
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "from-number",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            2
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "from-empty",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            ""
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "empty-to",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "",
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "bool-to",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": false,
+          "outcome": "safe"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "null-outcome",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": null
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "bad-outcome",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "invalid"
+        }
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "wire-version-0",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ],
+      "wire_version": true
+    },
+    "valid": false
+  },
+  {
+    "name": "wire-version-1",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ],
+      "wire_version": false
+    },
+    "valid": false
+  },
+  {
+    "name": "wire-version-2",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ],
+      "wire_version": null
+    },
+    "valid": false
+  },
+  {
+    "name": "wire-version-3",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ],
+      "wire_version": "1"
+    },
+    "valid": false
+  },
+  {
+    "name": "wire-version-4",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ],
+      "wire_version": 0
+    },
+    "valid": false
+  },
+  {
+    "name": "wire-version-5",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ],
+      "wire_version": 2
+    },
+    "valid": false
+  },
+  {
+    "name": "wire-version-6",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe"
+        }
+      ],
+      "wire_version": 1.5
+    },
+    "valid": false
+  },
+  {
+    "name": "numeric-interoperability-positive-max",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {
+            "nested": [
+              9007199254740991
+            ]
+          }
+        }
+      ],
+      "_meta": {
+        "value": 9007199254740991
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "numeric-interoperability-negative-max",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {
+            "nested": [
+              -9007199254740991
+            ]
+          }
+        }
+      ],
+      "_meta": {
+        "value": -9007199254740991
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "numeric-interoperability-positive-overflow",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {
+            "nested": [
+              9007199254740992
+            ]
+          }
+        }
+      ],
+      "_meta": {
+        "value": 9007199254740992
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "numeric-interoperability-negative-overflow",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {
+            "nested": [
+              -9007199254740992
+            ]
+          }
+        }
+      ],
+      "_meta": {
+        "value": -9007199254740992
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "numeric-interoperability-int-valued-float",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {
+            "nested": [
+              37.0
+            ]
+          }
+        }
+      ],
+      "_meta": {
+        "value": 37.0
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "numeric-interoperability-fractional",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {
+            "nested": [
+              -0.125
+            ]
+          }
+        }
+      ],
+      "_meta": {
+        "value": -0.125
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "numeric-interoperability-fractional-large",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {
+            "nested": [
+              2e+30
+            ]
+          }
+        }
+      ],
+      "_meta": {
+        "value": 2e+30
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "numeric-interoperability-bool-is-json",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {
+            "nested": [
+              true
+            ]
+          }
+        }
+      ],
+      "_meta": {
+        "value": true
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "numeric-interoperability-false-is-json",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {
+            "nested": [
+              false
+            ]
+          }
+        }
+      ],
+      "_meta": {
+        "value": false
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "numeric-interoperability-full-width-string-id",
+    "value": {
+      "start_node": "s",
+      "nodes": {
+        "s": {
+          "type": "prompt",
+          "prompt": "Keep whitespace  ",
+          "choices": [
+            {
+              "id": "c",
+              "label": " C "
+            }
+          ]
+        }
+      },
+      "transitions": [
+        {
+          "from": [
+            "s",
+            "c"
+          ],
+          "to": "END",
+          "outcome": "safe",
+          "delta": {
+            "nested": [
+              "9223372036854775807"
+            ]
+          }
+        }
+      ],
+      "_meta": {
+        "value": "9223372036854775807"
+      }
+    },
+    "valid": true
+  }
+]

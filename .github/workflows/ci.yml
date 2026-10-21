@@ -6,6 +6,7 @@ on:
         tags: ["ts-v*", "py-v*"]
     pull_request:
         branches: [main, develop]
+        types: [opened, synchronize, reopened, labeled]
     workflow_dispatch:
         inputs:
             publish_npm:
