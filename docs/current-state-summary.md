@@ -1,11 +1,11 @@
-# Current TreeSpec source — 2026-10-21
+# Current TreeSpec source — 2026-11-15
 
-The reviewed combined baseline is `c6d8ba28223661ba507692cd3f688c27cd638e12`. This source prepares TypeScript and Python **0.4.4**. Existing public baselines are npm 0.4.2 and Python 0.4.3. Candidate metadata is not a publication claim.
+The published TypeScript and Python baseline is **0.4.4**. This source prepares compatible **0.4.5** maintenance releases with reviewed Vitest/Vite, Ruff and Pydantic lock updates. The existing parsing, opt-in strict authoring validation, graph diagnostics, ordered issues and opaque JSON extension behavior remain unchanged. Candidate metadata is not a registry publication or host adoption claim.
 
-The maintained namespaces are `@signalsafe/tree-spec` and `tree_spec`. The separate legacy `tree-spec-python` repository and `deliveryplus_tree_spec` namespace are retired; do not use them as an alternate publisher or replace the maintained authoring implementation with them.
+The maintained namespaces are `@signalsafe/tree-spec` and `tree_spec`. The separate `tree-spec-python` repository and former product-specific Python namespace are retired; neither is an alternate publisher. Application-owned simulator, lesson and adventure state remains outside this package.
 
-DeliveryPlus currently uses Step 5 archives with local version labels. The candidate is checked against their actual bytes: all authored fixture files and public TypeScript declarations agree; Python authoring modules are byte-identical, and the private lint argument removal preserves behavior. Differential checks cover parse, authoring validation and lint outcomes, ordered errors, opaque JSON, cycles and sparse collections. Release metadata never authorizes a host downgrade.
+Packed TypeScript smoke checks now exercise the existing public `validateAuthoringDocument` export alongside parser, lint and compiler exports. The actual TypeScript and Python examples, paired fixtures, strict types and runtime coverage gates remain part of release validation.
 
-One root workflow runs both language suites, verifies report provenance and runs one combined Sonar analysis under `SignalSafeSoftware_tree-spec-ts`. Both registry publishers wait for both language suites and the combined gate. All original tag/manual publishing interfaces remain; see [RELEASING.md](../RELEASING.md). Do not create tags, publish or adopt in hosts before approval and exact artifact verification.
+One root workflow runs both language suites, verifies coverage provenance and waits for one combined Sonar quality gate. Both registry publishers require both language suites and that gate. Independent immutable `ts-v*` and `py-v*` tags select their corresponding distribution; see [release instructions](../RELEASING.md). Host adoption follows verified registry artifacts and normal lockfile updates.
 
-Build constraints use setuptools `>=84.2.1,<85`, wheel `>=0.46,<1` and development build `>=1.6.1,<2`. These are build tools, not runtime API changes. Runtime parse/authoring/lint behavior and shared wire fixtures remain authoritative. Full runtime coverage thresholds remain 100%; combined overall coverage includes tooling and is reported separately.
+Original uncommitted ecosystem work was backed up before reconciliation. Current upstream refactors, additional negative tests, normal dependency resolution and stronger combined release gates were preserved. No compatibility alias, new domain dependency or wire-format change is introduced by this maintenance release.

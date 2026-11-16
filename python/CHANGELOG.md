@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.5] - 2026-11-15
+
+### Changed
+
+- Reconcile reviewed dependency updates without changing TreeSpec parsing, authoring validation or opaque extension preservation.
+- Verify the public authoring validator in the packed TypeScript artifact and refresh coordinated ownership and release documentation.
+
 ## [0.4.4] - 2026-10-21
 
 ### Changed
