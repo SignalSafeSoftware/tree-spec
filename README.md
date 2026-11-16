@@ -41,4 +41,4 @@ consumers together; the retired product-specific namespace is not provided.
 
 ## Prepared coordinated release
 
-This source prepares TypeScript and Python 0.4.4 while preserving the installed DeliveryPlus Step 5 authoring/wire behavior. Source metadata does not imply publication or host adoption. See [current state](docs/current-state-summary.md) and [release gates](RELEASING.md).
+This source prepares compatible TypeScript and Python 0.4.5 maintenance releases over the published 0.4.4 baseline. Parsing, strict opt-in authoring validation and opaque extensions retain their current behavior. Source metadata does not imply publication or host adoption. See [current state](docs/current-state-summary.md) and [release gates](RELEASING.md).

@@ -171,4 +171,4 @@ Wheel and source archives are built into `dist/`.
 
 ## Release preparation
 
-The maintained source prepares Python 0.4.4 alongside npm 0.4.4. The `tree_spec` namespace owns the current Python API; the standalone `deliveryplus_tree_spec` repository is retired. See [the coordinated release state](../docs/current-state-summary.md) and [release gates](../RELEASING.md). No publication or consumer adoption is implied by this version change.
+The maintained source prepares Python 0.4.5 alongside npm 0.4.5. The `tree_spec` namespace owns the current Python API; the standalone `deliveryplus_tree_spec` repository is retired. See [the coordinated release state](../docs/current-state-summary.md) and [release gates](../RELEASING.md). No publication or consumer adoption is implied by this version change.
