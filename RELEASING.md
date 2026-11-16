@@ -89,6 +89,8 @@ on stdin, never as a filesystem argument. `yarn check:distributions` remains the
 public command and validates both archives and mirrored wire fixtures. Its npm
 CLI is resolved beside the current Node executable without a PATH lookup.
 
-## Prepared 0.4.4 set
+## Verified 0.4.5 maintenance release
 
-Current preparation proposes npm and Python 0.4.4. Check exact registry/tag availability again before approval. Match candidate runtime/declaration inventories against the actual installed Step 5 archives, then preserve the approved source/artifact hashes. Publish only after explicit approval, successful fresh hosted matrix and actual combined gate. Download each approved public artifact and verify its payload before coordinated dependent locks and host adoption. Existing source locks contain real resolved dependencies; no future registry integrity or local consumer override belongs in published metadata.
+The compatible npm and Python 0.4.5 releases were published from reviewed merge commit `dff29cd3ffbdbddb25ab4a1379656a1dcc40db1f`. Immutable `ts-v0.4.5` and `py-v0.4.5` tags each passed the existing complete language/artifact and combined Sonar gates before their selected publisher ran. See [the release verification record](docs/release-2026-11-15.md) for workflow and artifact receipts.
+
+Future releases retain the same approval, exact version/tag checks and quality gates. Normal dependent locks and host adoption follow downloaded registry payload verification; source labels and local package overrides do not establish adoption.

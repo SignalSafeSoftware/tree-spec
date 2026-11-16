@@ -1,6 +1,6 @@
 # Current TreeSpec source — 2026-11-15
 
-The published TypeScript and Python baseline is **0.4.4**. This source prepares compatible **0.4.5** maintenance releases with reviewed Vitest/Vite, Ruff and Pydantic lock updates. The existing parsing, opt-in strict authoring validation, graph diagnostics, ordered issues and opaque JSON extension behavior remain unchanged. Candidate metadata is not a registry publication or host adoption claim.
+The published TypeScript and Python version is **0.4.5**, a compatible maintenance release over **0.4.4** with reviewed Vitest/Vite, Ruff and Pydantic lock updates. The existing parsing, opt-in strict authoring validation, graph diagnostics, ordered issues and opaque JSON extension behavior remain unchanged. [Verified registry artifacts and publisher runs](release-2026-11-15.md) establish publication; host adoption remains separately verified.
 
 The maintained namespaces are `@signalsafe/tree-spec` and `tree_spec`. The separate `tree-spec-python` repository and former product-specific Python namespace are retired; neither is an alternate publisher. Application-owned simulator, lesson and adventure state remains outside this package.
 
