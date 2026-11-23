@@ -3,11 +3,11 @@ import childProcess from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { syncBuiltinESMExports } from 'node:module';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { checkDistributions } from '../scripts/check-distributions.mjs';
 import { mock, test } from 'node:test';
 
-let invocation = 0;
-
-async function runChecker({ filename = 'package.tgz', output, result = { status: 0 } } = {}) {
+function runChecker({ filename = 'package.tgz', output, result = { status: 0 } } = {}) {
     const previousExitCode = process.exitCode;
     const calls = [];
     mock.method(childProcess, 'execFileSync', (_executable, args, options) => {
@@ -22,8 +22,7 @@ async function runChecker({ filename = 'package.tgz', output, result = { status:
     });
     syncBuiltinESMExports();
     try {
-        const checker = await import('../scripts/check-distributions.mjs');
-        if (invocation++ > 0) checker.checkDistributions();
+        checkDistributions();
         return { exitCode: process.exitCode, calls };
     } finally {
         mock.restoreAll();
@@ -32,8 +31,8 @@ async function runChecker({ filename = 'package.tgz', output, result = { status:
     }
 }
 
-test('passes exact packed bytes to the Python checker over stdin', async () => {
-    const { exitCode, calls } = await runChecker();
+test('passes exact packed bytes to the Python checker over stdin', () => {
+    const { exitCode, calls } = runChecker();
     assert.equal(exitCode, 0);
     assert.equal(calls.length, 1);
     assert.deepEqual(calls[0].args, ['python/scripts/check_distributions.py']);
@@ -42,16 +41,31 @@ test('passes exact packed bytes to the Python checker over stdin', async () => {
     assert.deepEqual(calls[0].options.stdio, ['pipe', 'inherit', 'inherit']);
 });
 
-test('rejects invalid npm pack metadata before starting Python', async () => {
-    for (const filename of [12, '../outside.tgz', 'package.zip']) {
-        await assert.rejects(runChecker({ filename }), /single archive filename/);
-    }
-    await assert.rejects(runChecker({ output: 'not JSON' }), SyntaxError);
+for (const filename of [12, '../outside.tgz', 'package.zip']) {
+    test(`rejects invalid npm pack filename ${String(filename)}`, () => {
+        assert.throws(() => runChecker({ filename }), /single archive filename/);
+    });
+}
+
+test('rejects invalid npm pack JSON', () => {
+    assert.throws(() => runChecker({ output: 'not JSON' }), SyntaxError);
 });
 
-test('propagates Python process failures and absent exit statuses', async () => {
-    assert.equal((await runChecker({ result: { status: 7 } })).exitCode, 7);
-    assert.equal((await runChecker({ result: { status: null } })).exitCode, 1);
+test('propagates Python process failures and absent exit statuses', () => {
+    assert.equal((runChecker({ result: { status: 7 } })).exitCode, 7);
+    assert.equal((runChecker({ result: { status: null } })).exitCode, 1);
     const failure = new Error('Python could not start');
-    await assert.rejects(runChecker({ result: { error: failure } }), error => error === failure);
+    assert.throws(() => runChecker({ result: { error: failure } }), error => error === failure);
+});
+
+
+test('direct CLI checks real packed artifacts and mirrored fixtures', () => {
+    const script = fileURLToPath(new URL('../scripts/check-distributions.mjs', import.meta.url));
+    const output = childProcess.execFileSync(process.execPath, [script], { encoding: 'utf8' });
+    assert.match(output, /Distribution boundaries and 13 shared wire fixtures passed/);
+});
+
+test('import works without a process entry path', () => {
+    const script = new URL('../scripts/check-distributions.mjs', import.meta.url).href;
+    childProcess.execFileSync(process.execPath, ['--input-type=module', '-e', `await import(${JSON.stringify(script)})`]);
 });
