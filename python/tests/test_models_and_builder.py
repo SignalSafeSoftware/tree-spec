@@ -366,3 +366,28 @@ def test_tree_spec_builder_update_spec_with_ab_meta_on_valid_spec() -> None:
 
 def test_tree_spec_builder_parse_tree_spec_or_none_returns_none() -> None:
     assert BuilderClass._parse_tree_spec_or_none({"bad": "spec"}) is None
+
+
+def test_empty_feedback_patch_preserves_existing_red_flags() -> None:
+    transition = Transition.model_validate(
+        {"from": ["n", "c"], "to": END_NODE_ID, "outcome": "safe",
+         "feedback": {"title": "Before", "red_flags": ["keep"]}}
+    )
+    original = transition.feedback
+
+    transition.apply_feedback_patch(ReplaceSet())
+
+    assert transition.feedback is original
+    assert transition.feedback is not None
+    assert transition.feedback.title == "Before"
+    assert transition.feedback.red_flags == ["keep"]
+
+
+def test_empty_feedback_patch_does_not_create_feedback() -> None:
+    transition = Transition.model_validate(
+        {"from": ["n", "c"], "to": END_NODE_ID, "outcome": "safe"}
+    )
+
+    transition.apply_feedback_patch(ReplaceSet())
+
+    assert transition.feedback is None

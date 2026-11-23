@@ -155,7 +155,7 @@ jobs:
             - name: Measure actual JavaScript distribution checker
               run: |
                   mkdir -p artifacts/tooling-js artifacts/tooling
-                  node --test --experimental-test-coverage --test-reporter=lcov scripts/check-distributions.mjs > artifacts/tooling-js/lcov.info
+                  node --test --experimental-test-coverage --test-coverage-include=scripts/check-distributions.mjs --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 --test-reporter=lcov tests/tooling-distributions.test.mjs > artifacts/tooling-js/lcov.info
                   python scripts/prepare_sonar_coverage.py record tooling
                   cp artifacts/tooling/source-sha256.json artifacts/tooling-js/source-sha256.json
             - uses: actions/upload-artifact@v7
