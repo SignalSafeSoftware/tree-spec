@@ -92,10 +92,12 @@ class PackagingBoundaryTests(unittest.TestCase):
         smoke.verify_sdist_contents(self.dist)
 
     def test_wheel_requires_own_typed_marker(self) -> None:
+        missing_marker = self.wheel(["tree_spec/__init__.py"])
         with self.assertRaisesRegex(SystemExit, "missing py.typed"):
-            smoke.verify_py_typed(self.wheel(["tree_spec/__init__.py"]))
+            smoke.verify_py_typed(missing_marker)
+        foreign_marker = self.wheel(["unrelated/py.typed"])
         with self.assertRaisesRegex(SystemExit, "not found under tree_spec"):
-            smoke.verify_py_typed(self.wheel(["unrelated/py.typed"]))
+            smoke.verify_py_typed(foreign_marker)
         smoke.verify_py_typed(self.wheel(["tree_spec/py.typed"]))
 
     def test_smoke_stops_when_build_produces_no_wheel(self) -> None:
