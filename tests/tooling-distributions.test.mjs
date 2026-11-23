@@ -67,5 +67,6 @@ test('direct CLI checks real packed artifacts and mirrored fixtures', () => {
 
 test('import works without a process entry path', () => {
     const script = new URL('../scripts/check-distributions.mjs', import.meta.url).href;
-    childProcess.execFileSync(process.execPath, ['--input-type=module', '-e', `await import(${JSON.stringify(script)})`]);
+    const output = childProcess.execFileSync(process.execPath, ['--input-type=module', '-e', `await import(${JSON.stringify(script)})`], { encoding: 'utf8' });
+    assert.equal(output, '');
 });
