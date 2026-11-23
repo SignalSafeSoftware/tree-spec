@@ -60,7 +60,12 @@ def check_supported_children(schema: dict[str, object]) -> None:
         child = schema.get(key)
         if isinstance(child, dict):
             check_supported(child)
-    for child in schema.get("anyOf", []):
+    alternatives = schema.get("anyOf", [])
+    if not isinstance(alternatives, list):
+        raise ValueError("Authoring unions require a list of schemas")
+    for child in alternatives:
+        if not isinstance(child, dict):
+            raise ValueError("Authoring union alternatives require schemas")
         check_supported(child)
 
 

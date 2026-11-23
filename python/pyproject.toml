@@ -62,7 +62,7 @@ addopts = "--cov=tree_spec --cov-report=term-missing --cov-fail-under=100"
 [tool.coverage.run]
 source = ["tree_spec"]
 omit = ["scripts/*"]
-branch = false
+branch = true
 
 [tool.coverage.report]
 fail_under = 100
