@@ -1,5 +1,13 @@
 # TreeSpec
 
+[![Build](https://github.com/SignalSafeSoftware/tree-spec/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/SignalSafeSoftware/tree-spec/actions/workflows/ci.yml)
+[![Quality gate](https://sonarcloud.io/api/project_badges/measure?project=SignalSafeSoftware_tree-spec-ts&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=SignalSafeSoftware_tree-spec-ts)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=SignalSafeSoftware_tree-spec-ts&metric=coverage)](https://sonarcloud.io/summary/new_code?id=SignalSafeSoftware_tree-spec-ts)
+[![npm version](https://img.shields.io/npm/v/@signalsafe/tree-spec?logo=npm)](https://www.npmjs.com/package/@signalsafe/tree-spec)
+[![npm downloads per month](https://img.shields.io/npm/dm/@signalsafe/tree-spec?label=downloads%2Fmonth)](https://www.npmjs.com/package/@signalsafe/tree-spec)
+[![PyPI version](https://img.shields.io/pypi/v/signalsafe-tree-spec?logo=pypi)](https://pypi.org/project/signalsafe-tree-spec/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](https://github.com/SignalSafeSoftware/tree-spec/blob/main/LICENSE)
+
 One repository owns the TreeSpec wire contract in two independently published distributions:
 
 | Folder | Distribution | Public import |
