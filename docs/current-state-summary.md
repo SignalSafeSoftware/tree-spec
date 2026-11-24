@@ -1,4 +1,20 @@
-# Current TreeSpec source — 2026-11-15
+# Current npm release: @signalsafe/tree-spec 0.4.6
+
+The trusted-publishing migration prepares patch `0.4.6` under immutable
+GitHub tag `ts-v0.4.6`. Current release and authentication instructions are in
+[RELEASING.md](../RELEASING.md); the migration uses GitHub Actions OIDC rather than
+a permanent npm publishing token. Runtime exports and dependency ranges are
+unchanged by this patch. Host adoption and Python releases remain independent.
+
+The release workflow is the source of publication evidence. This documentation
+follow-up does not reseal or republish an immutable package archive or move a tag.
+
+## Historical release and state record
+
+The previous snapshot below is retained for context; its version and publication
+status statements apply to that earlier snapshot.
+
+### Current TreeSpec source — 2026-11-15
 
 The published TypeScript and Python version is **0.4.5**, a compatible maintenance release over **0.4.4** with reviewed Vitest/Vite, Ruff and Pydantic lock updates. The existing parsing, opt-in strict authoring validation, graph diagnostics, ordered issues and opaque JSON extension behavior remain unchanged. [Verified registry artifacts and publisher runs](release-2026-11-15.md) establish publication; host adoption remains separately verified.
 
