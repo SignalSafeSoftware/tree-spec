@@ -85,6 +85,9 @@ jobs:
                   SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
 
     publish-npm:
+        permissions:
+          contents: read
+          id-token: write
         name: Publish npm
         needs: [typescript, python, combined-scan]
         if: |
@@ -102,6 +105,8 @@ jobs:
               with:
                   node-version: "24"
 
+            - name: Install npm with trusted publishing support
+              run: npm install --global npm@11.21.2 --ignore-scripts
             - name: Enable Yarn
               run: corepack enable
 
@@ -125,18 +130,9 @@ jobs:
             - name: Check package version
               run: node -e "const p=require('./typescript/package.json'); console.log(p.name, p.version)"
 
-            - name: Configure npm auth
-              run: |
-                echo "registry=https://registry.npmjs.org/" > ~/.npmrc
-                echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
-              env:
-                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
             - name: Publish to npm
               run: npm publish --access public --ignore-scripts
               working-directory: typescript
-              env:
-                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     publish-pypi:
         name: Publish PyPI
